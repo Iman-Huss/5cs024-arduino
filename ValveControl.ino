@@ -1,102 +1,110 @@
-#include <ESP8266WiFi.h>
- 
-const char* ssid = "Lenovo P2";
-const char* password = "password";
- 
-int ledPin = 2; // GPIO2
-WiFiServer server(80);
- 
-void setup() {
-  Serial.begin(115200);
-  delay(10);
- 
- 
-  pinMode(ledPin, OUTPUT);
-  digitalWrite(ledPin, LOW);
-   
-  // Connect to WiFi network
-  Serial.println();
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-   
-  WiFi.begin(ssid, password);
-   
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.println("WiFi connected");
-   
-  // Start the server
-  server.begin();
-  Serial.println("Server started");
- 
-  // Print the IP address
-  Serial.print("Use this URL to connect: ");
-  Serial.print("http://");
-  Serial.print(WiFi.localIP());
-  Serial.println("/");
-    
+#include <SoftwareSerial.h>
+
+SoftwareSerial ESP8266(10, 11);
+
+String wifiNetwork = "LenovoP2"; // Garder les guillements
+String Password = "password"; // Garder les guillements
+
+/****************************************************************/
+/*                             INIT                             */
+/****************************************************************/
+void setup()
+{
+  pinMode(13,OUTPUT);
+  digitalWrite(13,LOW);
+  Serial.begin(9600);
+  
+  ESP8266.begin(115200);
+  sendToESP8266("AT+CIOBAUD=9600");
+  receiveFromESP8266(4000);
+
+  ESP8266.begin(9600);  
+  InitESP8266();
+  ConnectToWebsite();
 }
- 
-void loop() {
-  // Check if a client has connected
-  WiFiClient client = server.available();
-  if (!client) {
-    return;
-  }
+/****************************************************************/
+/*                            Loop                              */
+/****************************************************************/
+void loop()
+{
+   while(ESP8266.available())
+   {    
+     Serial.println(ESP8266.readString());
+   }  
    
-  // Wait until the client sends some data
-  Serial.println("new client");
-  while(!client.available()){
-    delay(1);
-  }
-   
-  // Read the first line of the request
-  String request = client.readStringUntil('\r');
-  Serial.println(request);
-  client.flush();
-   
-  // Match the request
- 
-  int value = LOW;
-  if (request.indexOf(“/LED=ON”) != -1) {
-    digitalWrite(ledPin, HIGH);
-    value = HIGH;
-  } 
-  if (request.indexOf(“/LED=OFF”) != -1){
-    digitalWrite(ledPin, LOW);
-    value = LOW;
-  }
- 
-// Set ledPin according to the request
-//digitalWrite(ledPin, value);
-   
- 
-  // Return the response
-  client.println("HTTP/1.1 200 OK");
-  client.println("Content-Type: text/html");
-  client.println(""); //  do not forget this one
-  client.println("<!DOCTYPE HTML>");
-  client.println("<html>");
-   
-  client.print("Led pin is now: ");
-   
-  if(value == HIGH) {
-    client.print("On");  
-  } else {
-    client.print("Off");
-  }
-  client.println("<br><br>");
-  client.println("Click <a href=\"/LED=ON\">here</a> turn the LED on pin 2 ON<br>");
-  client.println("Click <a href=\"/LED=OFF\">here</a> turn the LED on pin 2 OFF<br>");
-  client.println("</html>");
- 
-  delay(1);
-  Serial.println("Client disonnected");
-  Serial.println("");
- 
 }
- 
+
+/* Function to initialise ESP8266 */
+void InitESP8266()
+{  
+  Serial.println("***********************************************************");  
+  Serial.println("********************** INITIALISATION *********************");
+  Serial.println("***********************************************************");  
+  sendToESP8266("AT");
+  receiveFromESP8266(2000);
+  Serial.println("***********************************************************");
+  sendToESP8266("AT+CWMODE=3"); //Wifi mode - softAP + station mode
+  receiveFromESP8266(5000);
+  Serial.println("***********************************************************");
+  sendToESP8266("AT+CWJAP=\""+ wifiNetwork + "\",\"" + Password +"\""); //connect to wifi network
+  receiveFromESP8266(10000);
+  Serial.println("***********************************************************");
+  sendToESP8266("AT+CIFSR"); //Display the IPs adress (client + server)
+  receiveFromESP8266(1000);
+  Serial.println("***********************************************************");
+  sendToESP8266("AT+CIPMUX=1");  //set multiple connections 
+  receiveFromESP8266(1000);
+  Serial.println("***********************************************************"); 
+  /* configures the module as the server. It will then enable external clients to connect to the module.
+  The port number is set for listening.*/
+  sendToESP8266("AT+CIPSERVER=1,80");
+  receiveFromESP8266(1000);
+  Serial.println("***********************************************************");
+  Serial.println("******************* INITIALISATION DONE *******************");
+  Serial.println("***********************************************************");  
+}
+
+/* Function to connect to the server */
+void ConnectToWebsite()
+{
+  Serial.println(".................. CONNECTION TO SERVER ....................");
+  sendToESP8266("AT+CIPSTART=1,\"TCP\",\"mi-linux.wlv.ac.uk\",80"); //connect to website
+  receiveFromESP8266(10000);
+  Serial.println("***************** CONNECTION TO SERVER: OK ****************");
+  sendToESP8266("AT+CIPSEND=1,114"); //send message to connection 1, 114 bytes
+  receiveFromESP8266(2000);
+
+  String httpreq = "GET /~1429422/receiver.php?lecturers=7&students=342 HTTP/1.1";
+  // Make a HTTP request:
+  sendToESP8266(httpreq);
+  receiveFromESP8266(10000);
+  sendToESP8266("Host: mi-linux.wlv.ac.uk");
+  sendToESP8266("Connection: keep-alive");
+  sendToESP8266("");   
+  receiveFromESP8266(5000);
+  Serial.println("\r\n");
+}
+
+/* Function that send commands to the ESP8266 */
+void sendToESP8266(String commande)
+{  
+  ESP8266.println(commande);
+}
+
+/*Function that read and display messages sent by ESP8266 (with timeout)*/
+void receiveFromESP8266(const int timeout)
+{
+  String reponse = "";
+  long int time = millis();
+  while( (time+timeout) > millis())
+  {
+    while(ESP8266.available())
+    {
+      char c = ESP8266.read();
+      reponse+=c;
+    }
+  }
+  Serial.print(reponse);   
+}
+
+
