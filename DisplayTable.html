@@ -1,0 +1,37 @@
+<html>
+<head>
+    <title>Displaying a SQL Table on the Web</title>
+</head>
+
+<body>
+<table border="1">
+    <caption>Employees</caption>
+    <tr>
+        <th>Last Name
+        <th>First Name
+    </tr>
+
+    <?php
+  $db = odbc_connect("dsn", "userid", "password") or die ("could not connect<br />");
+
+    $stmt = "Select * from tblEmployees ORDER BY LastName, FirstName";
+
+    $result = odbc_exec($db, $stmt);
+
+    if ($result == FALSE) die ("could not execute statement $stmt<br />");
+
+    while (odbc_fetch_row($result)) // while there are rows
+    {
+    print "<tr>\n";
+    print "  <td>" . odbc_result($result, "LastName") . "\n";
+        print "  <td>" . odbc_result($result, "FirstName") . "\n";
+        print "</tr>\n";
+    }
+
+    odbc_free_result($result);
+
+    odbc_close($db);
+    ?>
+</table>
+</body>
+</html>
