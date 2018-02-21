@@ -5,7 +5,7 @@
 
 
 
-const char* ssid     = "lap_hotspot";
+const char* ssid  = "lap_hotspot";
 const char* password = "m0{C8520";
 
 ESP8266WebServer server(80);
