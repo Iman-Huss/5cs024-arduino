@@ -20,7 +20,6 @@ Stepper stepper(STEPS, 2, 4, 3, 5);
 
 boolean valveMoving = false;
 
-
 /****************************************************************/
 /*                             INIT                             */
 /****************************************************************/
@@ -58,13 +57,11 @@ void loop()
       digitalWrite(9,HIGH);
       digitalWrite(13,LOW);
       digitalWrite(12,LOW);
-      Blink(9);
+      // Blink(9);
     }
-  
-//   while(ESP8266.available())
-//   {    
-//     Serial.println(ESP8266.readString());
-//   }  
+else
+{
+ 
 
   if(ESP8266.available()) // check if the esp is sending a message 
   {
@@ -80,7 +77,8 @@ void loop()
       Serial.print("new pinNumber : "); 
       Serial.println(pinNumber, DEC);
       if(pinNumber == 1)
-      {      digitalWrite(9,HIGH);
+      {  
+      digitalWrite(9,HIGH);
       digitalWrite(13,LOW);
       digitalWrite(12,LOW);
         valveMoving = true;
@@ -89,16 +87,16 @@ void loop()
       
       if(pinNumber == 2)
       {
-              digitalWrite(9,HIGH);
+      digitalWrite(9,HIGH);
       digitalWrite(13,LOW);
       digitalWrite(12,LOW);
-        valveMoving = true;
-        closeValve();
+      valveMoving = true;
+      closeValve();
       }     
     }
   
   }  
-
+ }
 }
 
 
@@ -128,6 +126,7 @@ void InitESP8266()
   receiveFromESP8266(1000);
   Serial.println("******************* INITIALISATION DONE *******************");
 }
+
 
 
 /* Function to connect to the server */
@@ -174,20 +173,70 @@ void receiveFromESP8266(const int timeout)
 }
 
 
-void openValve(){
+void openValve1(){
   stepper.setSpeed(6); // 6 rpm
+  
+  
+ 
   stepper.step(-2038); // do 2038 steps in the other direction with faster speed -- corresponds to one revolution in 10 seconds
+  
+  
   valveMoving = false;
   digitalWrite(13,LOW);
   digitalWrite(12,HIGH);
   digitalWrite(9, LOW);
+  
+ 
 }
 
 
-void closeValve(){
+void openValve(){
+ stepper.setSpeed(6); // 6 rpm
+ for (int i = 0;i!=11;i++)
+ { 
+  digitalWrite(9,1);
+  stepper.step(-180);
+  digitalWrite(9,0);
+ }
+ 
+  digitalWrite(9,1);
+  stepper.step(-58);
+  
+  valveMoving = false;
+
+  digitalWrite(13,HIGH);
+  digitalWrite(12,LOW);
+  digitalWrite(9, LOW);
+  
+ 
+}
+
+
+void closeValve1(){
   stepper.setSpeed(6); // 6 rpm
   stepper.step(2038); // do 2038 steps in the other direction with faster speed -- corresponds to one revolution in 10 seconds
   valveMoving = false;
+  digitalWrite(13,HIGH);
+  digitalWrite(12,LOW);
+  digitalWrite(9, LOW);
+
+}
+
+void closeValue()
+{
+ stepper.setSpeed(6); // 6 rpm
+ for (int i = 0;i!=11;i++)
+ { 
+  digitalWrite(9,1);
+  stepper.step(180);
+  digitalWrite(9,0);
+ }
+ 
+  digitalWrite(9,1);
+  stepper.step(58);
+ 
+  valveMoving = false;
+  
   digitalWrite(13,HIGH);
   digitalWrite(12,LOW);
   digitalWrite(9, LOW);
@@ -195,10 +244,12 @@ void closeValve(){
 
 
 void Blink(int ledPin) {
+
   digitalWrite(ledPin, HIGH);   // turn the LED on (HIGH is the voltage level)
   delay(200);                       // wait for a second
   digitalWrite(ledPin, LOW);    // turn the LED off by making the voltage LOW
   delay(200);                       // wait for a second
+ 
 }
 
 
