@@ -2,10 +2,11 @@
 $servername = "mi-linux.wlv.ac.uk";
 $username = "1526056";
 $password = "mysql123";
+$databasename = "db1526056";
 
-$conn = new mysqli($servername, $username, $password);
+$conn = new mysqli($servername, $username, $password, $databasename);
 
-$sql = "SELECT * FROM `db1526056`.`LOG`";
+$sql = "SELECT * FROM `LOG`";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
