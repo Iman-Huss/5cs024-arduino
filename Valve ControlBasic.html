@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!-- saved from url=(0044)http://mi-linux.wlv.ac.uk/~1613741/valve.php -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  	<title>Valve Control </title> 
+</head>
+
+    <body onload="loadPage();">
+    
+       <h1> Valve Control</h1>
+  	   <h4 id="result">This is the site where you can control the valves.</h4>
+    
+<script type="text/javascript">
+
+  var siteData = [];
+  var zoneData = [];
+  var valveData = [];  
+  var arrayLength = valveData.length;  
+
+  function addValve(){
+      var x = document.getElementById("valveSelect");
+      var option = document.createElement("option");
+      option.text = document.getElementById("addValveTB").value;
+      x.add(option);
+      valveData.push(document.getElementById("addValveTB").value);
+      document.getElementById("demo2").innerHTML = valveData;
+      var valveArrayLength = valveData.length;
+  }
+  
+    function addZone(){
+      var x = document.getElementById("zoneSelect");
+      var option = document.createElement("option");
+      option.text = document.getElementById("addValveTB").value;
+      x.add(option);
+      valveData.push(document.getElementById("addValveTB").value);
+      var valveArrayLength = valveData.length;
+  }
+  
+    function addSite(){
+      var x = document.getElementById("siteSelect");
+      var option = document.createElement("option");
+      option.text = document.getElementById("addValveTB").value;
+      x.add(option);
+      valveData.push(document.getElementById("addValveTB").value);
+      var valveArrayLength = valveData.length;
+  }
+
+  function removeValve(){
+      var x = document.getElementById("valveSelect");
+      x.remove(x.selectedIndex);
+  }
+  
+  function loadZone(){
+      var x = document.getElementById("valveSelect");
+      x.remove(x.selectedIndex);
+  }
+     
+  function deleteAll(){
+      localStorage.removeItem("valves");
+      localStorage.removeItem("check")  ;
+  }
+
+  function loadPage(){
+        document.getElementById("demo3").innerHTML = localStorage.getItem("check");
+        
+  
+       if (localStorage.getItem("check") === null){
+          localStorage.setItem("check", "1");   
+       }
+      
+      else{
+      var retrievedData = localStorage.getItem("valves"); 
+      valveData = JSON.parse(retrievedData);
+      document.getElementById("demo").innerHTML = valveData;
+
+      var valveArrayLength = valveData.length;
+
+    var valveSel = document.getElementById('valveSelect');
+    var zoneSel = document.getElementById('zoneSelect');
+    var siteSel = document.getElementById('siteSelect');
+
+    for(var i = 0; i < valveArrayLength; i++){
+      var opt = document.createElement('option');
+      opt.innerHTML = valveData[i];
+      opt.textContent = valveData[i];
+      valveSel.appendChild(opt);
+    }
+  }
+
+  }
+  
+  function commit() {
+      document.getElementById("demo").innerHTML = valveData;
+      document.getElementById("demo2").innerHTML = valveData.length;
+      
+      localStorage.setItem("valves", JSON.stringify(valveData));
+  }
+</script>
+       <label for="siteSelect"><b>Sites:</b></label>
+    <select id="siteSelect" multiple="multiple" name="siteName">
+  		<option value="1">1</option>
+  		<option value="2">2</option>
+  		<option value="3">3</option>
+  		<option value="4">4</option>
+      </select>
+      
+      <label for="addsite"><b>Add site:</b></label>
+      <input type="text" id="addSiteTB" placeholder="Enter site name." name="sitetextbox" required="">
+      <button type="button">Add site</button> 
+      <button type="button">Remove site</button> 
+      <p></p>
+      
+      <label for="zoneName"><b>Zones:</b></label>
+    <select id="zoneSelect" multiple="multiple" name="zoneName">
+  		<option value="a">a</option>
+  		<option value="b">b</option>
+  		<option value="c">c</option>
+  		<option value="d">d</option>
+      
+    </select>
+      
+      <label for="addzone"><b>Add zone:</b></label>
+      <input type="text" id="addZoneTB" placeholder="Enter zone name." name="zonetextbox" required="">
+      <button type="button">Add zone</button>
+      <button type="button">Remove zone</button> 
+      <p></p>
+      
+      <label for="valveName"><b>Valves:</b></label>
+    <select id="valveSelect" name="valveName">
+  	
+    <option></option><option>door</option><option>open</option><option>window</option><option>tester 123</option></select>
+    
+      <label for="addvalve"><b>Add valve:</b></label>
+      <input type="text" id="addValveTB" placeholder="Enter valve name." name="valvetextbox" required="">
+      <button type="button" onclick="addValve()">Add valve</button>
+      <button type="button" onclick="removeValve()">Remove valve</button> 
+      <button type="button" onclick="commit()">Commit</button>
+      <button type="button" onclick="deleteAll()">Delete all</button>
+      
+      <p id="demo">,door,open,window,tester 123</p>
+      <p id="demo2">Please</p>
+       <p id="demo3">1</p>
+
+</body></html>
