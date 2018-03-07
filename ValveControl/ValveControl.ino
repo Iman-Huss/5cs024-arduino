@@ -1,38 +1,68 @@
 #include <SoftwareSerial.h>
 #include <Stepper.h>
+#include <LiquidCrystal.h>
 
-#define STEPS 2038
 #define DEBUG true
 
+//---( Number of steps per revolution of INTERNAL motor in 4-step mode )---
+//#define STEPS_PER_MOTOR_REVOLUTION 8   
 
-SoftwareSerial ESP8266(10, 11);
+//---( Steps per OUTPUT SHAFT of gear reduction )---
+#define STEPS_PER_OUTPUT_REVOLUTION -2 * 64  //2048 
+
+SoftwareSerial ESP8266(10, 11); // RX, TX
+
+//String wifiNetwork = "VM563367-2G"; // Garder les guillements
+//String Password = "sckmdzzu"; // Garder les guillements
 
 //String wifiNetwork = "MOHAESP"; // Garder les guillements
 //String Password = "password"; // Garder les guillements
 
-String wifiNetwork = "VM563367-2G"; // Garder les guillements
-String Password = "password"; // Garder les guillements
+String wifiNetwork = "lap_hotspot"; // Garder les guillements
+String Password = "12345678"; // Garder les guillements
 
 //String wifiNetwork = "LenovoP2"; // Garder les guillements
 //String Password = "password"; // Garder les guillements
 
-Stepper stepper(STEPS, 2, 4, 3, 5);
-
 boolean valveMoving = false;
+
+int redPin = 13;
+int greenPin = 12;
+int amberPin = 9;
+
+Stepper small_stepper(STEPS_PER_MOTOR_REVOLUTION, 2, 4, 3, 5);
+
+int  Steps2Take;
+
+// initialize the library by associating any needed LCD interface pin
+// with the arduino pin number it is connected to
+LiquidCrystal lcd(A0, A1, A5, A4, A3, A2);
 
 /****************************************************************/
 /*                             INIT                             */
 /****************************************************************/
 void setup()
-{
-  pinMode(9,OUTPUT);
-  digitalWrite(9,LOW);
-  
-  pinMode(12,OUTPUT);
-  digitalWrite(12,LOW);
+{  
+  pinMode(A0, OUTPUT);
+  pinMode(A1, OUTPUT);
+  pinMode(A2, OUTPUT);
+  pinMode(A3, OUTPUT);
+  pinMode(A4, OUTPUT);
+  pinMode(A5, OUTPUT);
 
-  pinMode(13,OUTPUT);
-  digitalWrite(13,LOW);
+  // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+  // Print a message to the LCD.
+  lcd.print("No Contamination!");
+  
+  pinMode(amberPin,OUTPUT);
+  digitalWrite(amberPin,LOW);
+  
+  pinMode(greenPin,OUTPUT);
+  digitalWrite(greenPin,LOW);
+
+  pinMode(redPin,OUTPUT);
+  digitalWrite(redPin,HIGH);
   
   Serial.begin(9600);
   
@@ -43,9 +73,7 @@ void setup()
   ESP8266.begin(9600);  
   InitESP8266();
   ConnectToWebsite();
-
 }
-
 
 
 /****************************************************************/
@@ -53,15 +81,20 @@ void setup()
 /****************************************************************/
 void loop()
 {
-      if (valveMoving == true){
-      digitalWrite(9,HIGH);
-      digitalWrite(13,LOW);
-      digitalWrite(12,LOW);
-      // Blink(9);
-    }
-else
-{
- 
+
+
+  // set the cursor to column 0, line 1
+  // (note: line 1 is the second row, since counting begins with 0):
+  lcd.setCursor(0, 1);
+  // print the number of seconds since reset:
+  lcd.print(millis() / 1000);
+  
+  
+//   while(ESP8266.available())
+//   {    
+//     Serial.println(ESP8266.readString());
+//   }  
+
 
   if(ESP8266.available()) // check if the esp is sending a message 
   {
@@ -76,29 +109,27 @@ else
       int pinNumber = (ESP8266.read()-48); // get first number i.e.
       Serial.print("new pinNumber : "); 
       Serial.println(pinNumber, DEC);
+      
       if(pinNumber == 1)
-      {  
-      digitalWrite(9,HIGH);
-      digitalWrite(13,LOW);
-      digitalWrite(12,LOW);
+      {      
+        digitalWrite(amberPin,HIGH);
+        digitalWrite(redPin,LOW);
+        digitalWrite(greenPin,LOW);
         valveMoving = true;
         openValve();
       }
       
       if(pinNumber == 2)
       {
-      digitalWrite(9,HIGH);
-      digitalWrite(13,LOW);
-      digitalWrite(12,LOW);
-      valveMoving = true;
-      closeValve();
+        digitalWrite(amberPin,HIGH);
+        digitalWrite(redPin,LOW);
+        digitalWrite(greenPin,LOW);
+        valveMoving = true;
+        closeValve();
       }     
     }
-  
   }  
- }
 }
-
 
 /* Function to initialise ESP8266 */
 void InitESP8266()
@@ -115,18 +146,17 @@ void InitESP8266()
     
   Serial.println("***********************************************************");
   sendToESP8266("AT+CIFSR"); //Display the IPs adress (client + server)
-  receiveFromESP8266(1000);
+  receiveFromESP8266(10000);
   Serial.println("***********************************************************");
   sendToESP8266("AT+CIPMUX=1");  //set multiple connections 
-  receiveFromESP8266(1000);
+  receiveFromESP8266(5000);
   Serial.println("***********************************************************"); 
   /* configures the module as the server. It will then enable external clients to connect to the module.
   The port number is set for listening.*/
   sendToESP8266("AT+CIPSERVER=1,80");
-  receiveFromESP8266(1000);
+  receiveFromESP8266(5000);
   Serial.println("******************* INITIALISATION DONE *******************");
 }
-
 
 
 /* Function to connect to the server */
@@ -136,17 +166,18 @@ void ConnectToWebsite()
   sendToESP8266("AT+CIPSTART=1,\"TCP\",\"mi-linux.wlv.ac.uk\",80"); //connect to website
   receiveFromESP8266(10000);
   Serial.println("***************** CONNECTION TO SERVER: OK ****************");
-  sendToESP8266("AT+CIPSEND=1,114"); //send message to connection 1, 114 bytes
-  receiveFromESP8266(2000);
+  sendToESP8266("AT+CIPSEND=1,94"); //send message to connection 1, 114 bytes
+  receiveFromESP8266(10000);
 
-  String httpreq = "GET /~1429422/receiver.php?lecturers=7&students=342 HTTP/1.1";
+//  String httpreq = "GET /~1429422/receiver.php?lecturers=7&students=342 HTTP/1.1";
+  String httpreq = "GET /~1613741/valve.php?will=23 HTTP/1.1";
   // Make a HTTP request:
   sendToESP8266(httpreq);
   receiveFromESP8266(10000);
   sendToESP8266("Host: mi-linux.wlv.ac.uk");
-  sendToESP8266("Connection: close");
+  sendToESP8266("Connection: keep-alive");
   sendToESP8266("");   
-  receiveFromESP8266(5000);
+  receiveFromESP8266(10000);
   Serial.println("\r\n");
 }
 
@@ -173,83 +204,43 @@ void receiveFromESP8266(const int timeout)
 }
 
 
-void openValve1(){
-  stepper.setSpeed(6); // 6 rpm
-  
-  
- 
-  stepper.step(-2038); // do 2038 steps in the other direction with faster speed -- corresponds to one revolution in 10 seconds
-  
-  
-  valveMoving = false;
-  digitalWrite(13,LOW);
-  digitalWrite(12,HIGH);
-  digitalWrite(9, LOW);
-  
- 
-}
-
-
 void openValve(){
- stepper.setSpeed(6); // 6 rpm
- for (int i = 0;i!=11;i++)
- { 
-  digitalWrite(9,1);
-  stepper.step(-180);
-  digitalWrite(9,0);
- }
- 
-  digitalWrite(9,1);
-  stepper.step(-58);
+
+  for (int i = 0; i<8; i++){
+      digitalWrite(amberPin, LOW);
+    Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION ;  // Rotate CW 1 turn
+    small_stepper.setSpeed(1000);   
+    small_stepper.step(Steps2Take);
+    //delay(10);
+    digitalWrite(amberPin, HIGH);
+    Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION;  // Rotate CW 1 turn  
+    small_stepper.setSpeed(1000);  // 700 a good max speed??
+    small_stepper.step(Steps2Take);
+    //delay(10);
+  }
   
-  valveMoving = false;
-
-  digitalWrite(13,HIGH);
-  digitalWrite(12,LOW);
-  digitalWrite(9, LOW);
-  
- 
+  digitalWrite(redPin,LOW);
+  digitalWrite(greenPin,HIGH);
+  digitalWrite(amberPin, LOW);
 }
 
 
-void closeValve1(){
-  stepper.setSpeed(6); // 6 rpm
-  stepper.step(2038); // do 2038 steps in the other direction with faster speed -- corresponds to one revolution in 10 seconds
-  valveMoving = false;
-  digitalWrite(13,HIGH);
-  digitalWrite(12,LOW);
-  digitalWrite(9, LOW);
+void closeValve(){
+  for (int i = 0; i<8; i++){
+      digitalWrite(amberPin, LOW);
+    Steps2Take  =  - STEPS_PER_OUTPUT_REVOLUTION ;  // Rotate CCW 1 turn
+    small_stepper.setSpeed(1000);   
+    small_stepper.step(Steps2Take);
+    //delay(10);
+    digitalWrite(amberPin, HIGH);
+    Steps2Take  =  - STEPS_PER_OUTPUT_REVOLUTION;  // Rotate CCW 1 turn  
+    small_stepper.setSpeed(1000);  // 700 a good max speed??
+    small_stepper.step(Steps2Take);
+    //delay(10);
+  }
 
+  digitalWrite(redPin,HIGH);
+  digitalWrite(greenPin,LOW);
+  digitalWrite(amberPin, LOW);
 }
-
-void closeValue()
-{
- stepper.setSpeed(6); // 6 rpm
- for (int i = 0;i!=11;i++)
- { 
-  digitalWrite(9,1);
-  stepper.step(180);
-  digitalWrite(9,0);
- }
- 
-  digitalWrite(9,1);
-  stepper.step(58);
- 
-  valveMoving = false;
-  
-  digitalWrite(13,HIGH);
-  digitalWrite(12,LOW);
-  digitalWrite(9, LOW);
-}
-
-
-void Blink(int ledPin) {
-
-  digitalWrite(ledPin, HIGH);   // turn the LED on (HIGH is the voltage level)
-  delay(200);                       // wait for a second
-  digitalWrite(ledPin, LOW);    // turn the LED off by making the voltage LOW
-  delay(200);                       // wait for a second
- 
-}
-
 
