@@ -7,6 +7,7 @@
 boolean testWithoutWiFi = false; // added for quick testing without wifi
 
 // const vars for valve states
+
 int const STATE_VALVE_OPEN = 1000;
 int const STATE_VALVE_CLOSED = 2000;
 int const STATE_VALVE_HALF = -1000;
@@ -154,9 +155,11 @@ void loop()
   else
   {
   mainLoop(); // runs the main loop
+ 
   }
  
 }
+
 
 
 void mainLoop()
@@ -343,7 +346,7 @@ boolean loopSteps(int numberOfSteps,boolean opening)
     {
       if (opening) // if valve is opening move CW
         {
-         if(digitalRead(openSensorPin)==LOW) // checks open limit switch
+         if(digitalRead(openSensorPin)==HIGH) // checks open limit switch // HIGH ADDED BECAUSE HALL EFFECT SENSOR ARE LOW WHEN BY A MAGNET 
            {
             small_stepper.step(1);
            }
@@ -355,7 +358,7 @@ boolean loopSteps(int numberOfSteps,boolean opening)
        }
      else   // if valve is closed move CCW
        {
-        if(digitalRead(closeSensorPin)==LOW) // checks closed limit switch
+        if(digitalRead(closeSensorPin)==HIGH) // checks closed limit switch // HIGH ADDED BECAUSE HALL EFFECT SENSOR ARE LOW WHEN BY A MAGNET 
          {
            small_stepper.step(-1);
          }
