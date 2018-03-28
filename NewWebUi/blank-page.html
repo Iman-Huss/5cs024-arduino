@@ -29,7 +29,7 @@
 
          <H1 id="userinfo">User info</H1>
       <link rel="stylesheet" href="styles.css">
-      <TITLE>Valve Control</TITLE> 
+      
       
         
         <LINK href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet"/>
@@ -41,9 +41,75 @@
       	
     
         
+<<<<<<< HEAD
         <BODY onload="loadPage()">
     
   
+=======
+            
+           
+        
+    
+    <SCRIPT>
+    $( function() {
+    				$( "#valOn" ).on( "click", function() {
+    				  $( "#green" ).toggleClass( "highlightgreen", 1000 );
+    				});
+    			} );
+    
+    			$( function() {
+    				$( "#valOn" ).on( "click", function() {
+            
+    					if ($( "#red" ).hasClass( "highlightred" )) {
+                  
+    					  $( "#red" ).toggleClass( "highlightred", 1000 );
+                
+                
+    					}
+    				});
+    			} );
+    			
+    
+    			$( function() {
+    				$( "#valOff" ).on( "click", function() {
+    				  $( "#red" ).toggleClass( "highlightred", 1000 );
+    				});
+    			} );
+    
+    			
+    			$( function() {
+    				$( "#valOff" ).on( "click", function() {
+    					if ($( "#green" ).hasClass( "highlightgreen" )) {
+    					  $( "#green" ).toggleClass( "highlightgreen", 1000 );
+    					}
+    				});
+    			} );
+    
+    				
+    			$(document).ready(function(){
+    				$("#valOff").click(function(){
+    					$.get("http://192.168.137.186", {pin:2}); // execute get request
+              alert("CLOSING VALVE");
+    				});
+    			});
+    			
+    
+    				
+    			$(document).ready(function(){
+    				$("#valOn").click(function(){
+    					$.get("http://192.168.137.186", {pin:1}); // execute get request
+              alert("OPENING VALVE");
+    				});
+    			});
+    
+    		
+    
+    
+    
+     
+    </SCRIPT>
+
+>>>>>>> a5658887f8a29bc308ccc787c67666caab8ee3b5
 </head>
 
 <body>
@@ -228,7 +294,44 @@
                                 <i class="fa fa-file"></i> Blank Page
                             </li>
                         </ol>
+<<<<<<< HEAD
 
+=======
+                        <div>
+    
+    <DIV class="row">
+    			<DIV class="col-sm-12 text-center" >
+    				<BUTTON id="valOn" class="btn btn-primary btn-md center-block" Style="width: 250px;" OnClick="btnSearch_Click" >OPEN VALVE</BUTTON>
+    				<BUTTON id="valOff" class="btn btn-danger btn-md center-block" Style="width: 250px;" OnClick="btnClear_Click" >CLOSE VALVE</BUTTON>
+             <p></p>
+             <p></p>
+             <p></p>
+            
+    			 </DIV>
+    		</DIV>
+    
+    		<DIV class="container">
+    			<DIV class="led-box">
+    				<DIV id="green" class="led-green"></DIV>
+    				<P>Green LED</P>
+    			</DIV>
+    			<DIV class="led-box">
+    				<DIV id="yellow" class="led-yellow"></DIV>
+    				<P>Yellow LED</P>
+    			</DIV>
+    			<DIV class="led-box">
+    				<DIV id="red" class="led-red"></DIV>
+    				<P>Red LED</P>
+    			</DIV>
+    		</DIV>
+        
+           
+
+  
+                
+          
+                        </div>
+>>>>>>> a5658887f8a29bc308ccc787c67666caab8ee3b5
                     </div>
                 </div>
                 <!-- /.row -->
