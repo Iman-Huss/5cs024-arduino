@@ -30,6 +30,214 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    <SCRIPT>
+            $( function() {
+                            $( "#valOn" ).on( "click", function() {
+                              $( "#green" ).toggleClass( "highlightgreen", 1000 );
+                            });
+                        } );
+            
+                        $( function() {
+                            $( "#valOn" ).on( "click", function() {
+                    
+                                if ($( "#red" ).hasClass( "highlightred" )) {
+                          
+                                  $( "#red" ).toggleClass( "highlightred", 1000 );
+                        
+                        
+                                }
+                            });
+                        } );
+                        
+            
+                        $( function() {
+                            $( "#valOff" ).on( "click", function() {
+                              $( "#red" ).toggleClass( "highlightred", 1000 );
+                            });
+                        } );
+            
+                        
+                        $( function() {
+                            $( "#valOff" ).on( "click", function() {
+                                if ($( "#green" ).hasClass( "highlightgreen" )) {
+                                  $( "#green" ).toggleClass( "highlightgreen", 1000 );
+                                }
+                            });
+                        } );
+            
+                            
+                        $(document).ready(function(){
+                            $("#valOff").click(function(){
+                                $.get("http://192.168.137.186", {pin:2}); // execute get request
+                      alert("CLOSING VALVE");
+                            });
+                        });
+                        
+            
+                            
+                        $(document).ready(function(){
+                            $("#valOn").click(function(){
+                                $.get("http://192.168.137.186", {pin:1}); // execute get request
+                      alert("OPENING VALVE");
+                            });
+                        });
+            
+                    
+            
+            
+            
+              var siteData = [];
+              var zoneData = [];
+              var valveData = [];  
+              var arrayLength = valveData.length;   
+              
+              
+            
+              
+              function addValve() 
+              
+              {  
+                  var x = document.getElementById("valveSelect");
+                  var option = document.createElement("option");
+                  option.text = document.getElementById("addValveTB").value;
+                  x.add(option);
+                  valveData.push(document.getElementById("addValveTB").value);
+                  document.getElementById("demo2").innerHTML = valveData;
+                  var valveArrayLength = valveData.length;  
+                  
+              }
+              
+                function addZone() 
+              
+              {  
+                  var x = document.getElementById("zoneSelect");
+                  var option = document.createElement("option");
+                  option.text = document.getElementById("addValveTB").value;
+                  x.add(option);
+                  valveData.push(document.getElementById("addValveTB").value);
+                  var valveArrayLength = valveData.length;  
+                  
+              }
+              
+                function addSite() 
+              
+              {  
+                  var x = document.getElementById("siteSelect");
+                  var option = document.createElement("option");
+                  option.text = document.getElementById("addValveTB").value;
+                  x.add(option);
+                  valveData.push(document.getElementById("addValveTB").value);
+                  var valveArrayLength = valveData.length;  
+                  
+              }
+              
+              
+            
+              function removeValve() {
+                  var x = document.getElementById("valveSelect");
+                  x.remove(x.selectedIndex);
+                  
+              }
+              
+              function loadZone() {
+                  var x = document.getElementById("valveSelect");
+                  x.remove(x.selectedIndex);
+              }
+                 
+              function deleteAll() {
+                  localStorage.removeItem("valves");
+                  localStorage.removeItem("check")  ;
+              }
+              
+              
+              
+              function loadPage() {
+                    document.getElementById("demo3").innerHTML = localStorage.getItem("check");
+                    
+              
+                   if (localStorage.getItem("check") === null) 
+                   {
+                      localStorage.setItem("check", "1");   
+                   }
+                  
+                  else
+                  {
+                  
+                  var retrievedData = localStorage.getItem("valves"); 
+                  valveData = JSON.parse(retrievedData);
+                  document.getElementById("demo").innerHTML = valveData;
+                  
+                  var x = document.getElementById("valveSelect");
+                  var option = document.createElement("option");
+                  option.text = localStorage.getItem("valves");
+                  x.add(option);
+                  
+                  
+                  x.add(option);
+                  uname = localStorage.getItem("username") ;
+                  document.getElementById("userinfo").innerHTML = uname;; 
+                  
+                    
+                  var valveArrayLength = valveData.length;
+                  
+                     
+                     
+                  
+                  
+                var valveSel = document.getElementById('valveSelect');
+                var zoneSel = document.getElementById('zoneSelect');
+                var siteSel = document.getElementById('siteSelect');
+                
+                
+                for(var i = 0; i < valveArrayLength; i++) 
+                {
+                  
+                  var opt = document.createElement('option');
+                  opt.innerHTML = valveData[i];
+                  opt.textContent = valveData[i];
+                  valveSel.appendChild(opt);
+                }
+                   
+              }    
+                   
+                  
+              function showLoginInfo()
+              {
+                  localStorage.setItem("username", uname);  
+                  
+                  document.getElementById("userinfo").innerHTML = uname;
+              }
+                  
+                  
+              }
+              
+              function commit()
+              {    
+                  
+                  
+                  document.getElementById("demo").innerHTML = valveData;
+                  document.getElementById("demo2").innerHTML = valveData.length;
+                  
+                  localStorage.setItem("valves", JSON.stringify(valveData));
+              }   
+              
+        
+              
+            
+            
+                    
+              
+              
+              var modal = document.getElementById("id01");
+            
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            }
+            </SCRIPT>
+
 </head>
 
 <body>
@@ -122,6 +330,9 @@
                             Dashboard <small>Valve Control</small>
                         </h1>
                         <ol class="breadcrumb">
+                                <li>
+                                        <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
+                                    </li>
                             <li class="active">
                                 <i class="fa fa-tint"></i> Valve Control
                             </li>
@@ -134,10 +345,31 @@
                     <div class="col-lg-12">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title">Fucking Valve control</h3>
+                                <h3 class="panel-title">Valve Control</h3>
                             </div>
                             <div class="panel-body">
-                                <div><h1>PUT YOUR VALVE CONTROL RIGHT HERE BOYS</h1></div>
+
+                                <DIV class="col-sm-12 text-right">
+                                        <div style="vertical-align: center""width: 300px; height:300;">
+                                        <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="width: 300px; height:300;" OnClick="btnSearch_Click" >OPEN VALVE</BUTTON>
+                                        </div>
+                                        <br>
+                                        <div style="vertical-align: center""width: 300px; height:300;">
+                                        <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="width: 300px; height:300;" OnClick="btnClear_Click" >CLOSE VALVE</BUTTON>
+                                    </div>
+                                        <p></p>
+                                 <p></p>
+                                 <p></p>
+                                <LABEL for="choiceValve"><B>Valve:</B></LABEL>
+                                
+                                <SELECT id="choiceValve" name="choiceValveName">
+                                  <OPTION value="a">1</OPTION>
+                                      <OPTION value="b">2</OPTION>
+                                      <OPTION value="c">3</OPTION>
+                                      <OPTION value="d">4</OPTION>
+                                </SELECT>
+                                     </DIV>
+
                             </div>
                         </div>
                     </div>
