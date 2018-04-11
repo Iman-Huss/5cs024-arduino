@@ -4,8 +4,8 @@
 
 #define DEBUG true
 
-boolean testWithoutWiFi = true; // added for quick testing without wifi
-boolean inTestMode = true;
+boolean testWithoutWiFi = false; // added for quick testing without wifi
+boolean inTestMode = false;
 
 // const vars for valve states
 
@@ -19,14 +19,13 @@ int flashEveryAmount = 50;
 int ledState = 0;
 
 //---( Number of steps per revolution of INTERNAL motor in 4-step mode ) NOT USED
-#define STEPS_PER_MOTOR_REVOLUTION 8   
-
+#define STEPS_PER_MOTOR_REVOLUTION 32
+int speed = 950;
 //---( Steps per OUTPUT SHAFT of gear reduction )---
 #define STEPS_PER_OUTPUT_REVOLUTION -2 * 64  //2048 
 
-
  
-SoftwareSerial ESP8266(10, 11); // RX, TX
+SoftwareSerial ESP8266(11, 12); // RX, TX
 
 //String wifiNetwork = "MOHAESP"; // Garder les guillemets
 //String Password = "password"; // Garder les guillemets
@@ -40,22 +39,20 @@ boolean startup = true;
 
 //#define COMMON_ANODE
 
-int redPin = 13;
-int greenPin = 12;
+int redPin = 6;
+int greenPin = 10; // pin 10 swapped with pin 13 ( SoftwareSerial ) becasuse pin 13 was not PWM 
 int bluePin = 9;
-
 
 
 // sensor pins
 int openSensorPin = 8;
 int closeSensorPin = 7;
-int liquidSesnorPin = 6;
-
+int liquidSesnorPin = 13;
 
 
 // Initialize Stepper Motor
-//Stepper small_stepper(STEPS_PER_MOTOR_REVOLUTION, 2, 4, 3, 5);
-Stepper small_stepper(200, 2, 3, 4, 5);
+Stepper small_stepper(STEPS_PER_MOTOR_REVOLUTION, 2, 3, 4, 5);
+
 int  Steps2Take;
 
 // initialize the library by associating any needed LCD interface pin
@@ -92,7 +89,7 @@ void setup()
   pinMode(liquidSesnorPin,INPUT);
   
   
-  setColor(255, 0, 0); // Turn the RGB Led Red (Valve closed)
+  setColor(0, 0, 255); // turns on blue LED to indicate initialisation of system.
 
   // Initialise the serial com
   Serial.begin(9600);  
@@ -111,6 +108,22 @@ void setup()
   lcd.print(" INITIALISATION ");
   lcd.setCursor(0, 1);
   lcd.print("      DONE      ");
+  small_stepper.setSpeed(600);  
+  
+  // indicates system ready for internet connection
+  setColor(0, 0, 0); 
+  delay(150);
+  setColor(0, 0, 255);
+  delay(150); 
+  setColor(0, 0, 0);
+  delay(150); 
+  setColor(0, 0, 255);
+  delay(150); 
+  setColor(0, 0, 0);
+  delay(150); 
+  //---------------------------------------------------
+
+   setColor(255, 0, 0); // sets the led to red
 }
 
 void loop()
@@ -197,19 +210,16 @@ void mainLoop()
 
 if(inTestMode) // open and close Test
 {
- setColor(255, 0, 0);  // red
-  delay(1000);
+  setColor(255, 0, 0);  // red
+  delay(500);
   setColor(0, 255, 0);  // green
-  delay(1000);
+  delay(500);
   setColor(0, 0, 255);  // blue
-  delay(1000);
-  setColor(255, 255, 50);  // yellow
-  delay(1000);  
- 
-openValve();
-delay(2000);
-closeValve();
-inTestMode = false;
+  delay(500); 
+  openValve();
+  delay(2000);
+  closeValve();
+  inTestMode = false;
 }
 
   if(ESP8266.available()) // check if the esp is sending a message 
@@ -264,7 +274,7 @@ inTestMode = false;
         lcd.print("Valve close!");
       }     
 
-      // If order 3 received: send data to the server
+      // If order 3 received: send data to the server used for testing data
       if(pinNumber == 3)
       {
         ConnectToWebsite();  // Connect to the website
@@ -379,14 +389,12 @@ boolean loopSteps(int numberOfSteps,boolean opening)
 {
   int flashCount = 0;
    setColor(0, 0, 0);
-   Serial.println("Closing");
        
   for(int i  = 0;i>numberOfSteps;i++) // loops thro steps
     {
       if (opening) // if valve is opening move CW
         {
-      
-           Serial.println("Opening 1");
+   
          if(digitalRead(openSensorPin)) // checks open limit switch
            {
            if(flashCount==flashEveryAmount)
@@ -405,7 +413,7 @@ boolean loopSteps(int numberOfSteps,boolean opening)
          
             if (ledState==0)
           {
-          setColor(255, 255, 50); // Turn the Led Amber
+          setColor(190, 10, 0); // Turn the Led Amber
           }
           else
           {
@@ -414,7 +422,7 @@ boolean loopSteps(int numberOfSteps,boolean opening)
      flashCount++;
         
             
-            //  Serial.println("Closing 2");
+   //           Serial.println("Closing 2");
             small_stepper.step(1);
            }
          else
@@ -425,8 +433,8 @@ boolean loopSteps(int numberOfSteps,boolean opening)
        }
      else   // if valve is closed move CCW
        {
-         Serial.println("Closing 1");
-
+     //    Serial.println("Closing 1");
+//delay(1);
          
         if(digitalRead(closeSensorPin)) // checks closed limit switch
          {
@@ -444,18 +452,16 @@ boolean loopSteps(int numberOfSteps,boolean opening)
           flashCount=0;
           }
          
-            if (ledState==0)
+          if (ledState==0)
           {
-          setColor(255, 255, 50); // Turn the Led Amber
+          setColor(190, 10, 0); // Turn the Led Amber
           }
           else
           {
-             setColor(0, 0, 0);
+            setColor(0, 0, 0);
           }
-     flashCount++;
+         flashCount++;
 
-           
-           Serial.println("Closing 2");
            small_stepper.step(-1);
          }
         else
@@ -472,12 +478,12 @@ void openValve(){
   for (int i = 0; i<8; i++){
     setColor(0, 0, 0); // Turn Off the Led
     Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION ;  // Rotate CW 1 turn
-    small_stepper.setSpeed(1000);   
+   
     if(!loopSteps(Steps2Take, true)){break;} // runs funtion to move stepper motor step bu step so that limit switch can be used - saves over run
     //delay(10);
    
     Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION;  // Rotate CW 1 turn  
-    small_stepper.setSpeed(1000);  // 700 a good max speed??
+    
     if(!loopSteps(Steps2Take, true)){break;}
   }  
   
@@ -489,12 +495,12 @@ void closeValve(){
   for (int i = 0; i<8; i++){
     setColor(0, 0, 0); // Turn Off the Led
     Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION ;  // Rotate CCW 1 turn
-    small_stepper.setSpeed(1000);   
+   
     if(!loopSteps(Steps2Take, false)){break;} // runs funtion to move stepper motor step bu step so that limit switch can be used - saves over run
     //delay(10);
     
     Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION;  // Rotate CCW 1 turn  
-    small_stepper.setSpeed(1000);  
+   
     if(!loopSteps(Steps2Take, false)){break;}
   }
   
