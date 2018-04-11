@@ -23,220 +23,31 @@
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+    <!-- Gay Queers -->
+    <SCRIPT src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></SCRIPT>
+    <SCRIPT src="https://code.jquery.com/jquery-1.12.4.js"></SCRIPT>
+    <SCRIPT src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></SCRIPT>
+
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
-    <SCRIPT>
-            $( function() {
-                            $( "#valOn" ).on( "click", function() {
-                              $( "#green" ).toggleClass( "highlightgreen", 1000 );
-                            });
-                        } );
-            
-                        $( function() {
-                            $( "#valOn" ).on( "click", function() {
-                    
-                                if ($( "#red" ).hasClass( "highlightred" )) {
-                          
-                                  $( "#red" ).toggleClass( "highlightred", 1000 );
-                        
-                        
-                                }
-                            });
-                        } );
-                        
-            
-                        $( function() {
-                            $( "#valOff" ).on( "click", function() {
-                              $( "#red" ).toggleClass( "highlightred", 1000 );
-                            });
-                        } );
-            
-                        
-                        $( function() {
-                            $( "#valOff" ).on( "click", function() {
-                                if ($( "#green" ).hasClass( "highlightgreen" )) {
-                                  $( "#green" ).toggleClass( "highlightgreen", 1000 );
-                                }
-                            });
-                        } );
-            
-                            
-                        $(document).ready(function(){
-                            $("#valOff").click(function(){
-                                $.get("http://192.168.137.186", {pin:2}); // execute get request
-                      alert("CLOSING VALVE");
-                            });
-                        });
-                        
-            
-                            
-                        $(document).ready(function(){
-                            $("#valOn").click(function(){
-                                $.get("http://192.168.137.186", {pin:1}); // execute get request
-                      alert("OPENING VALVE");
-                            });
-                        });
-            
-                    
-            
-            
-            
-              var siteData = [];
-              var zoneData = [];
-              var valveData = [];  
-              var arrayLength = valveData.length;   
-              
-              
-            
-              
-              function addValve() 
-              
-              {  
-                  var x = document.getElementById("valveSelect");
-                  var option = document.createElement("option");
-                  option.text = document.getElementById("addValveTB").value;
-                  x.add(option);
-                  valveData.push(document.getElementById("addValveTB").value);
-                  document.getElementById("demo2").innerHTML = valveData;
-                  var valveArrayLength = valveData.length;  
-                  
-              }
-              
-                function addZone() 
-              
-              {  
-                  var x = document.getElementById("zoneSelect");
-                  var option = document.createElement("option");
-                  option.text = document.getElementById("addValveTB").value;
-                  x.add(option);
-                  valveData.push(document.getElementById("addValveTB").value);
-                  var valveArrayLength = valveData.length;  
-                  
-              }
-              
-                function addSite() 
-              
-              {  
-                  var x = document.getElementById("siteSelect");
-                  var option = document.createElement("option");
-                  option.text = document.getElementById("addValveTB").value;
-                  x.add(option);
-                  valveData.push(document.getElementById("addValveTB").value);
-                  var valveArrayLength = valveData.length;  
-                  
-              }
-              
-              
-            
-              function removeValve() {
-                  var x = document.getElementById("valveSelect");
-                  x.remove(x.selectedIndex);
-                  
-              }
-              
-              function loadZone() {
-                  var x = document.getElementById("valveSelect");
-                  x.remove(x.selectedIndex);
-              }
-                 
-              function deleteAll() {
-                  localStorage.removeItem("valves");
-                  localStorage.removeItem("check")  ;
-              }
-              
-              
-              
-              function loadPage() {
-                    document.getElementById("demo3").innerHTML = localStorage.getItem("check");
-                    
-              
-                   if (localStorage.getItem("check") === null) 
-                   {
-                      localStorage.setItem("check", "1");   
-                   }
-                  
-                  else
-                  {
-                  
-                  var retrievedData = localStorage.getItem("valves"); 
-                  valveData = JSON.parse(retrievedData);
-                  document.getElementById("demo").innerHTML = valveData;
-                  
-                  var x = document.getElementById("valveSelect");
-                  var option = document.createElement("option");
-                  option.text = localStorage.getItem("valves");
-                  x.add(option);
-                  
-                  
-                  x.add(option);
-                  uname = localStorage.getItem("username") ;
-                  document.getElementById("userinfo").innerHTML = uname;; 
-                  
-                    
-                  var valveArrayLength = valveData.length;
-                  
-                     
-                     
-                  
-                  
-                var valveSel = document.getElementById('valveSelect');
-                var zoneSel = document.getElementById('zoneSelect');
-                var siteSel = document.getElementById('siteSelect');
+    <script>
                 
-                
-                for(var i = 0; i < valveArrayLength; i++) 
-                {
-                  
-                  var opt = document.createElement('option');
-                  opt.innerHTML = valveData[i];
-                  opt.textContent = valveData[i];
-                  valveSel.appendChild(opt);
-                }
-                   
-              }    
-                   
-                  
-              function showLoginInfo()
-              {
-                  localStorage.setItem("username", uname);  
-                  
-                  document.getElementById("userinfo").innerHTML = uname;
-              }
-                  
-                  
-              }
-              
-              function commit()
-              {    
-                  
-                  
-                  document.getElementById("demo").innerHTML = valveData;
-                  document.getElementById("demo2").innerHTML = valveData.length;
-                  
-                  localStorage.setItem("valves", JSON.stringify(valveData));
-              }   
-              
-        
-              
-            
-            
-                    
-              
-              
-              var modal = document.getElementById("id01");
-            
-            // When the user clicks anywhere outside of the modal, close it
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            }
-            </SCRIPT>
+            $(document).ready(function(){
+                $("#valOn").click(function(){
+                    $.get("http://172.25.24.14", {pin:1}); // execute get request
+                });
+            });
+            $(document).ready(function(){
+                $("#valOff").click(function(){
+                    $.get("http://172.25.24.14", {pin:2}); // execute get request
+                });
+            });
+        </script>
 
 </head>
 
@@ -351,12 +162,18 @@
 
                                 <DIV class="col-sm-12 text-right">
                                         <div style="vertical-align: center""width: 300px; height:300;">
-                                        <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="width: 300px; height:300;" OnClick="btnSearch_Click" >OPEN VALVE</BUTTON>
+                                        <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="width: 300px;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
                                         </div>
                                         <br>
                                         <div style="vertical-align: center""width: 300px; height:300;">
-                                        <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="width: 300px; height:300;" OnClick="btnClear_Click" >CLOSE VALVE</BUTTON>
-                                    </div>
+                                        <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="width: 300px;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
+                                        </div>
+                                        <!--
+                                        <div style="vertical-align: center""width: 300px; height:300;">
+                                            <a href="http://172.25.24.14/pin=1">TEST OPEN</a>
+                                            <a href="http://172.25.24.14/pin=2">TEST CLOSE</a>
+                                        </div>
+                                        -->
                                         <p></p>
                                  <p></p>
                                  <p></p>
