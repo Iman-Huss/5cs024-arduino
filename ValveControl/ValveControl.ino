@@ -4,7 +4,8 @@
 
 #define DEBUG true
 
-boolean testWithoutWiFi = false; // added for quick testing without wifi
+boolean testWithoutWiFi = true; // added for quick testing without wifi
+boolean inTestMode = true;
 
 // const vars for valve states
 
@@ -13,6 +14,9 @@ int const STATE_VALVE_CLOSED = 2000;
 int const STATE_VALVE_HALF = -1000;
 
 int currentValveState = STATE_VALVE_HALF;
+
+int flashEveryAmount = 50;
+int ledState = 0;
 
 //---( Number of steps per revolution of INTERNAL motor in 4-step mode ) NOT USED
 #define STEPS_PER_MOTOR_REVOLUTION 8   
@@ -24,15 +28,17 @@ int currentValveState = STATE_VALVE_HALF;
  
 SoftwareSerial ESP8266(10, 11); // RX, TX
 
-String wifiNetwork = "MOHAESP"; // Garder les guillemets
-String Password = "password"; // Garder les guillemets
+//String wifiNetwork = "MOHAESP"; // Garder les guillemets
+//String Password = "password"; // Garder les guillemets
 
-//String wifiNetwork = "lap_hotspot"; // Garder les guillemets
-//String Password = "12345678"; // Garder les guillemets
+String wifiNetwork = "wolfradiolan"; // Garder les guillemets
+String Password = "12345678"; // Garder les guillemets
 
 boolean valveMoving = false;
 
 boolean startup = true; 
+
+//#define COMMON_ANODE
 
 int redPin = 13;
 int greenPin = 12;
@@ -49,7 +55,7 @@ int liquidSesnorPin = 6;
 
 // Initialize Stepper Motor
 //Stepper small_stepper(STEPS_PER_MOTOR_REVOLUTION, 2, 4, 3, 5);
-Stepper small_stepper(200, 2, 4, 3, 5);
+Stepper small_stepper(200, 2, 3, 4, 5);
 int  Steps2Take;
 
 // initialize the library by associating any needed LCD interface pin
@@ -90,13 +96,15 @@ void setup()
 
   // Initialise the serial com
   Serial.begin(9600);  
+
+   if (!testWithoutWiFi) // added so quick testing can take place......
+  {
   ESP8266.begin(115200);
   sendToESP8266("AT+CIOBAUD=9600");
   receiveFromESP8266(4000);
   ESP8266.begin(9600);  
 
-  if (!testWithoutWiFi) // added so quick testing can take place......
-  {
+ 
   InitESP8266();
   }
   // Display info on LCD
@@ -114,22 +122,26 @@ void loop()
 
   if (liquidSesnorPin==HIGH) // checks to see if float switch is triggered - ie there is liquid in the chamber
     {
-    currentValveState = STATE_VALVE_CLOSED; 
+//    currentValveState = STATE_VALVE_CLOSED; // by pass untill sensor fitted
     //  SendData("full"); // sends message to website saying that the chamber is full 
     }
 //------------------------------------------------  BUG ABOVE -------------------------------------------------------------
 
 
   // ------------------------------- Startup check gets the state of the valve ------------------------------ //
-  
+       
+
   if (currentValveState==STATE_VALVE_HALF) // on first loop the current valve state will not be open or closed
   {
   int currentState = checkValveState(); // gets the current state of valve  
-  
+        Serial.println("Current Valve State: ");
+        Serial.print(currentState);
+
   switch(currentState)
   {
     case STATE_VALVE_OPEN:
     {
+       
       currentValveState = STATE_VALVE_OPEN;
       setColor(0, 255, 0); // sets led to green
       break;
@@ -142,7 +154,8 @@ void loop()
     }
     case STATE_VALVE_HALF:
     {
-     
+      Serial.println("Closing Valve");
+       
       closeValve(); // closes valve
       
     
@@ -182,6 +195,22 @@ void mainLoop()
   delay(300);
 
 
+if(inTestMode) // open and close Test
+{
+ setColor(255, 0, 0);  // red
+  delay(1000);
+  setColor(0, 255, 0);  // green
+  delay(1000);
+  setColor(0, 0, 255);  // blue
+  delay(1000);
+  setColor(255, 255, 50);  // yellow
+  delay(1000);  
+ 
+openValve();
+delay(2000);
+closeValve();
+inTestMode = false;
+}
 
   if(ESP8266.available()) // check if the esp is sending a message 
   {
@@ -338,16 +367,54 @@ void receiveFromESP8266(const int timeout)
 
 
 
+
+
+
 // A function to check if the valve has hit the limit switches, if not the stepper is moved forward once, if  limit swicth reached stepper is stopped.
+
+
+
 
 boolean loopSteps(int numberOfSteps,boolean opening)
 {
+  int flashCount = 0;
+   setColor(0, 0, 0);
+   Serial.println("Closing");
+       
   for(int i  = 0;i>numberOfSteps;i++) // loops thro steps
     {
       if (opening) // if valve is opening move CW
         {
-         if(digitalRead(openSensorPin)==HIGH) // checks open limit switch // HIGH ADDED BECAUSE HALL EFFECT SENSOR ARE LOW WHEN BY A MAGNET 
+      
+           Serial.println("Opening 1");
+         if(digitalRead(openSensorPin)) // checks open limit switch
            {
+           if(flashCount==flashEveryAmount)
+          {
+          if (ledState==0)
+          {
+            ledState = 1;
+            
+          }
+          else
+          {
+            ledState = 0;
+          }
+          flashCount=0;
+          }
+         
+            if (ledState==0)
+          {
+          setColor(255, 255, 50); // Turn the Led Amber
+          }
+          else
+          {
+             setColor(0, 0, 0);
+          }
+     flashCount++;
+        
+            
+            //  Serial.println("Closing 2");
             small_stepper.step(1);
            }
          else
@@ -358,8 +425,37 @@ boolean loopSteps(int numberOfSteps,boolean opening)
        }
      else   // if valve is closed move CCW
        {
-        if(digitalRead(closeSensorPin)==HIGH) // checks closed limit switch // HIGH ADDED BECAUSE HALL EFFECT SENSOR ARE LOW WHEN BY A MAGNET 
+         Serial.println("Closing 1");
+
+         
+        if(digitalRead(closeSensorPin)) // checks closed limit switch
          {
+            if(flashCount==flashEveryAmount)
+          {
+          if (ledState==0)
+          {
+            ledState = 1;
+            
+          }
+          else
+          {
+            ledState = 0;
+          }
+          flashCount=0;
+          }
+         
+            if (ledState==0)
+          {
+          setColor(255, 255, 50); // Turn the Led Amber
+          }
+          else
+          {
+             setColor(0, 0, 0);
+          }
+     flashCount++;
+
+           
+           Serial.println("Closing 2");
            small_stepper.step(-1);
          }
         else
@@ -379,7 +475,7 @@ void openValve(){
     small_stepper.setSpeed(1000);   
     if(!loopSteps(Steps2Take, true)){break;} // runs funtion to move stepper motor step bu step so that limit switch can be used - saves over run
     //delay(10);
-    setColor(255, 255, 50); // Turn the Led Amber
+   
     Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION;  // Rotate CW 1 turn  
     small_stepper.setSpeed(1000);  // 700 a good max speed??
     if(!loopSteps(Steps2Take, true)){break;}
@@ -396,7 +492,7 @@ void closeValve(){
     small_stepper.setSpeed(1000);   
     if(!loopSteps(Steps2Take, false)){break;} // runs funtion to move stepper motor step bu step so that limit switch can be used - saves over run
     //delay(10);
-    setColor(255, 255, 50);
+    
     Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION;  // Rotate CCW 1 turn  
     small_stepper.setSpeed(1000);  
     if(!loopSteps(Steps2Take, false)){break;}
@@ -411,11 +507,18 @@ void closeValve(){
 // Function to set the RGB Led color
 void setColor(int red, int green, int blue)
 {
-  // pin in analog and apply new value
-  digitalWrite(redPin, red);
-  digitalWrite(greenPin, green);
-  analogWrite(bluePin, blue); 
-} 
+  #ifdef COMMON_ANODE
+    red = 255 - red;
+    green = 255 - green;
+    blue = 255 - blue;
+  #endif
+
+
+  
+  analogWrite(redPin, red);
+  analogWrite(greenPin, green);
+  analogWrite(bluePin, blue);  
+}
 
 // Function to scroll text on LCD (ex. of use: scrollInFromRight(1, "Line2 From Right");
 void scrollInFromRight (int line, char str1[]) {
@@ -440,13 +543,14 @@ void scrollInFromRight (int line, char str1[]) {
 // function to check open and closed sensors to get current state of valve (Open or Closed)
 int checkValveState()
 {
-
+  boolean openCheck = false;
   
-  if (digitalRead(openSensorPin))
+  if (!digitalRead(openSensorPin))
   {
-    return STATE_VALVE_OPEN; 
+   return STATE_VALVE_OPEN;
   }
-  else if (digitalRead(closeSensorPin))
+  
+  if (!digitalRead(closeSensorPin))
   {
     return STATE_VALVE_CLOSED;
   }
