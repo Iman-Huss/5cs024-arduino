@@ -212,13 +212,14 @@ void ConnectToWebsite()
 void SendData(String data)
 {
   int lengthData;
-  lengthData = data.length() + 96; // total length of data to be send
+  lengthData = data.length() + 126; // total length of data to be send
   
   //sendToESP8266("AT+CIPSEND=1,109"); //send message to connection 1, 109 bytes (77 bytes before char "?")
   sendToESP8266("AT+CIPSEND=1," + lengthData);
   receiveFromESP8266(10000);
 
-  String httpreq = "GET /~1613741/valve.php?" + data + " HTTP/1.1";
+// http://mi-linux.wlv.ac.uk/~1606512/NewWebUi/ [LOCATION] valvecontrol
+  String httpreq = "GET /~1613741/NewWebUi/WolverhamptonValveControl.html?" + data + " HTTP/1.1";
   
   // Make a HTTP request:
   sendToESP8266(httpreq);
