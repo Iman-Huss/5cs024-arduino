@@ -4,28 +4,54 @@
 
 #define DEBUG true
 
-//---( Number of steps per revolution of INTERNAL motor in 4-step mode ) NOT USED
-#define STEPS_PER_MOTOR_REVOLUTION 8   
+boolean testWithoutWiFi = false; // added for quick testing without wifi
+boolean inTestMode = false;
 
+// const vars for valve states
+
+int const STATE_VALVE_OPEN = 1000;
+int const STATE_VALVE_CLOSED = 2000;
+int const STATE_VALVE_HALF = -1000;
+
+int currentValveState = STATE_VALVE_HALF;
+
+int flashEveryAmount = 50;
+int ledState = 0;
+
+//---( Number of steps per revolution of INTERNAL motor in 4-step mode ) NOT USED
+#define STEPS_PER_MOTOR_REVOLUTION 32
+int speed = 950;
 //---( Steps per OUTPUT SHAFT of gear reduction )---
 #define STEPS_PER_OUTPUT_REVOLUTION -2 * 64  //2048 
 
-SoftwareSerial ESP8266(10, 11); // RX, TX
+ 
+SoftwareSerial ESP8266(11, 12); // RX, TX
 
-String wifiNetwork = "MOHAESP"; // Garder les guillemets
-String Password = "password"; // Garder les guillemets
+//String wifiNetwork = "MOHAESP"; // Garder les guillemets
+//String Password = "password"; // Garder les guillemets
 
-//String wifiNetwork = "lap_hotspot"; // Garder les guillemets
-//String Password = "12345678"; // Garder les guillemets
+String wifiNetwork = "wolfradiolan"; // Garder les guillemets
+String Password = "12345678"; // Garder les guillemets
 
 boolean valveMoving = false;
 
-int redPin = 13;
-int greenPin = 12;
+boolean startup = true; 
+
+//#define COMMON_ANODE
+
+int redPin = 6;
+int greenPin = 10; // pin 10 swapped with pin 13 ( SoftwareSerial ) becasuse pin 13 was not PWM 
 int bluePin = 9;
 
+
+// sensor pins
+int openSensorPin = 8;
+int closeSensorPin = 7;
+int liquidSesnorPin = 13;
+
+
 // Initialize Stepper Motor
-Stepper small_stepper(STEPS_PER_MOTOR_REVOLUTION, 2, 4, 3, 5);
+Stepper small_stepper(STEPS_PER_MOTOR_REVOLUTION, 2, 3, 4, 5);
 
 int  Steps2Take;
 
@@ -58,25 +84,122 @@ void setup()
   pinMode(greenPin,OUTPUT);
   pinMode(redPin,OUTPUT);
   
-  setColor(255, 0, 0); // Turn the RGB Led Red (Valve closed)
+  pinMode(openSensorPin,INPUT);
+  pinMode(closeSensorPin,INPUT);
+  pinMode(liquidSesnorPin,INPUT);
+  
+  
+  setColor(0, 0, 255); // turns on blue LED to indicate initialisation of system.
 
   // Initialise the serial com
   Serial.begin(9600);  
+
+   if (!testWithoutWiFi) // added so quick testing can take place......
+  {
   ESP8266.begin(115200);
   sendToESP8266("AT+CIOBAUD=9600");
   receiveFromESP8266(4000);
   ESP8266.begin(9600);  
-  InitESP8266();
 
+ 
+  InitESP8266();
+  }
   // Display info on LCD
   lcd.print(" INITIALISATION ");
   lcd.setCursor(0, 1);
   lcd.print("      DONE      ");
-}
+  small_stepper.setSpeed(600);  
+  
+  // indicates system ready for internet connection
+  setColor(0, 0, 0); 
+  delay(150);
+  setColor(0, 0, 255);
+  delay(150); 
+  setColor(0, 0, 0);
+  delay(150); 
+  setColor(0, 0, 255);
+  delay(150); 
+  setColor(0, 0, 0);
+  delay(150); 
+  //---------------------------------------------------
 
+   setColor(255, 0, 0); // sets the led to red
+}
 
 void loop()
 {
+
+// ------------------------------- Checks to see if there is liquid in the chamber  ------------------------------ //
+
+//----------------- POSSIBLE BUG BELOW WILL NEED TO BE CHANGED TO ACCOUNT FOR NORMAL LIQUID FLOW IN FINAL VERSION --------------------- 
+
+  if (liquidSesnorPin==HIGH) // checks to see if float switch is triggered - ie there is liquid in the chamber
+    {
+//    currentValveState = STATE_VALVE_CLOSED; // by pass untill sensor fitted
+    //  SendData("full"); // sends message to website saying that the chamber is full 
+    }
+//------------------------------------------------  BUG ABOVE -------------------------------------------------------------
+
+
+  // ------------------------------- Startup check gets the state of the valve ------------------------------ //
+       
+
+  if (currentValveState==STATE_VALVE_HALF) // on first loop the current valve state will not be open or closed
+  {
+  int currentState = checkValveState(); // gets the current state of valve  
+        Serial.println("Current Valve State: ");
+        Serial.print(currentState);
+
+  switch(currentState)
+  {
+    case STATE_VALVE_OPEN:
+    {
+       
+      currentValveState = STATE_VALVE_OPEN;
+      setColor(0, 255, 0); // sets led to green
+      break;
+    }
+    case STATE_VALVE_CLOSED:
+    {
+      currentValveState = STATE_VALVE_CLOSED;
+      setColor(255, 0, 0); // sets the led to red
+      break;
+    }
+    case STATE_VALVE_HALF:
+    {
+      Serial.println("Closing Valve");
+       
+      closeValve(); // closes valve
+      
+    
+    //  SendData("Valve closed"); // sents message to website saying that the valve is closed 
+      break;
+    }
+    
+  }
+  }
+  else
+  {
+  mainLoop(); // runs the main loop
+ 
+  }
+ 
+}
+
+
+
+void mainLoop()
+{
+
+ if(digitalRead(liquidSesnorPin)==HIGH)
+ {
+  lcd.setCursor(0, 0);
+  lcd.print(" LIQUID ALERT! ");
+//  SendData("LIQUID");
+ }
+ else
+ {
+  
   // Display info on LCD
 
   //print the number of seconds since reset:
@@ -85,14 +208,29 @@ void loop()
   // lcd.clear();
   // set the cursor to column 0, line 0 (line 1 is the second row, since counting begins with 0) 
   lcd.setCursor(0, 0);
-  lcd.print("  GAS FLOWING   ");
+  lcd.print(" LIQUID FLOWING  ");
   lcd.setCursor(0, 1);
   lcd.print(" \177 \177 \177 \177 \177 \177 \177 \177"); // Display arrow to the LCD screen (Octal)
+ // delay(500);
+ // lcd.setCursor(0, 1);
+ // lcd.print("\177 \177 \177 \177 \177 \177 \177 \177 "); // Shift the arrows
+ // delay(300);
+ }
+
+if(inTestMode) // open and close Test
+{
+  setColor(255, 0, 0);  // red
   delay(500);
-  lcd.setCursor(0, 1);
-  lcd.print("\177 \177 \177 \177 \177 \177 \177 \177 "); // Shift the arrows
-  delay(300);
- 
+  setColor(0, 255, 0);  // green
+  delay(500);
+  setColor(0, 0, 255);  // blue
+  delay(500); 
+  openValve();
+  delay(2000);
+  closeValve();
+  inTestMode = false;
+}
+
   if(ESP8266.available()) // check if the esp is sending a message 
   {
     if(ESP8266.find("+IPD,")) // If network data received from a single connection
@@ -124,6 +262,7 @@ void loop()
 
         // Display info on LCD
         lcd.print("Valve Open!  ");
+        SendData("CLOSED");
       }
 
       // If order 2 received: Close the valve
@@ -142,18 +281,35 @@ void loop()
         closeValve(); // Close Valve
 
         // Display info on LCD
-        lcd.print("Valve close!");
+        lcd.print("Valve closed!");
+        SendData("CLOSED");
       }     
 
-      // If order 3 received: send data to the server
+      // If order 3 received: send data to the server used for testing data
       if(pinNumber == 3)
       {
         ConnectToWebsite();  // Connect to the website
-        SendData();  // Send data
-      }      
+        SendData("Hello");  // Send data
+      }  
+
+      if(pinNumber == 4) // valve test 
+      {
+       boolean outputResults =  testValve();
+
+  
+        ConnectToWebsite();  // Connect to the website
+        SendData("" + outputResults);  // Send data
+      }     
+          
     }
-  }  
+  }   
 }
+
+boolean testValve()
+{
+  return false; // code to be added here to test valve.
+}
+
 
 /* Function to initialise the ESP8266 */
 void InitESP8266()
@@ -173,8 +329,8 @@ void InitESP8266()
   lcd.print("      WIFI      ");
 
 
-      sendToESP8266("AT+CWJAP=\""+ wifiNetwork + "\",\"" + Password +"\""); //connect to wifi network
-      receiveFromESP8266(15000);
+  sendToESP8266("AT+CWJAP=\""+ wifiNetwork + "\",\"" + Password +"\""); //connect to wifi network
+  receiveFromESP8266(15000);
 
 
   // Display info on LCD
@@ -207,12 +363,17 @@ void ConnectToWebsite()
 }
 
 // Function to send data by GET request
-void SendData()
+void SendData(String data)
 {
+
+  // commented out because of website not working.....
+  /*
+  if(!testWithoutWiFi)
+  {
   sendToESP8266("AT+CIPSEND=1,109"); //send message to connection 1, 109 bytes (87 bytes before char "?")
   receiveFromESP8266(10000);
 
-  String httpreq = "GET /~1613741/valve.php?will=hellofromArduino! HTTP/1.1";
+  String httpreq = "GET /~1613741/valve.php?data=" + data + " HTTP/1.1";
   
   // Make a HTTP request:
   sendToESP8266(httpreq);
@@ -222,6 +383,8 @@ void SendData()
   sendToESP8266("");   
   receiveFromESP8266(10000);
   Serial.println("\r\n");
+  }*/
+  
 }
 
 /* Function that send commands to the ESP8266 */
@@ -246,18 +409,116 @@ void receiveFromESP8266(const int timeout)
   Serial.print(reponse);   
 }
 
+
+
+
+
+
+// A function to check if the valve has hit the limit switches, if not the stepper is moved forward once, if  limit swicth reached stepper is stopped.
+
+
+
+
+boolean loopSteps(int numberOfSteps,boolean opening)
+{
+  int flashCount = 0;
+   setColor(0, 0, 0);
+       
+  for(int i  = 0;i>numberOfSteps;i++) // loops thro steps
+    {
+      if (opening) // if valve is opening move CW
+        {
+   
+         if(digitalRead(openSensorPin)) // checks open limit switch
+           {
+           if(flashCount==flashEveryAmount)
+          {
+          if (ledState==0)
+          {
+            ledState = 1;
+            
+          }
+          else
+          {
+            ledState = 0;
+          }
+          flashCount=0;
+          }
+         
+            if (ledState==0)
+          {
+          setColor(190, 10, 0); // Turn the Led Amber
+          }
+          else
+          {
+             setColor(0, 0, 0);
+          }
+     flashCount++;
+        
+            
+   //           Serial.println("Closing 2");
+            small_stepper.step(1);
+           }
+         else
+           {
+           currentValveState = STATE_VALVE_OPEN;
+           return false;
+          }
+       }
+     else   // if valve is closed move CCW
+       {
+     //    Serial.println("Closing 1");
+//delay(1);
+         
+        if(digitalRead(closeSensorPin)) // checks closed limit switch
+         {
+            if(flashCount==flashEveryAmount)
+          {
+          if (ledState==0)
+          {
+            ledState = 1;
+            
+          }
+          else
+          {
+            ledState = 0;
+          }
+          flashCount=0;
+          }
+         
+          if (ledState==0)
+          {
+          setColor(190, 10, 0); // Turn the Led Amber
+          }
+          else
+          {
+            setColor(0, 0, 0);
+          }
+         flashCount++;
+
+           small_stepper.step(-1);
+         }
+        else
+         {
+          currentValveState = STATE_VALVE_CLOSED;
+          return false;
+        }
+    }
+  }
+}
+
 // Function to open the valve
 void openValve(){
   for (int i = 0; i<8; i++){
     setColor(0, 0, 0); // Turn Off the Led
     Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION ;  // Rotate CW 1 turn
-    small_stepper.setSpeed(1000);   
-    small_stepper.step(Steps2Take);
+   
+    if(!loopSteps(Steps2Take, true)){break;} // runs funtion to move stepper motor step bu step so that limit switch can be used - saves over run
     //delay(10);
-    setColor(255, 255, 50); // Turn the Led Amber
+   
     Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION;  // Rotate CW 1 turn  
-    small_stepper.setSpeed(1000);  // 700 a good max speed??
-    small_stepper.step(Steps2Take);
+    
+    if(!loopSteps(Steps2Take, true)){break;}
   }  
   
   setColor(0, 255, 0); // Turn the Led Green
@@ -267,28 +528,37 @@ void openValve(){
 void closeValve(){
   for (int i = 0; i<8; i++){
     setColor(0, 0, 0); // Turn Off the Led
-    Steps2Take  =  - STEPS_PER_OUTPUT_REVOLUTION ;  // Rotate CCW 1 turn
-    small_stepper.setSpeed(1000);   
-    small_stepper.step(Steps2Take);
+    Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION ;  // Rotate CCW 1 turn
+   
+    if(!loopSteps(Steps2Take, false)){break;} // runs funtion to move stepper motor step bu step so that limit switch can be used - saves over run
     //delay(10);
-    setColor(255, 255, 50);
-    Steps2Take  =  - STEPS_PER_OUTPUT_REVOLUTION;  // Rotate CCW 1 turn  
-    small_stepper.setSpeed(1000);  
-    small_stepper.step(Steps2Take);
+    
+    Steps2Take  =  STEPS_PER_OUTPUT_REVOLUTION;  // Rotate CCW 1 turn  
+   
+    if(!loopSteps(Steps2Take, false)){break;}
   }
   
   setColor(255, 0, 0); // Led turn red
 }
 
 
+
+
 // Function to set the RGB Led color
 void setColor(int red, int green, int blue)
 {
-  // pin in analog and apply new value
-  digitalWrite(redPin, red);
-  digitalWrite(greenPin, green);
-  analogWrite(bluePin, blue); 
-} 
+  #ifdef COMMON_ANODE
+    red = 255 - red;
+    green = 255 - green;
+    blue = 255 - blue;
+  #endif
+
+
+  
+  analogWrite(redPin, red);
+  analogWrite(greenPin, green);
+  analogWrite(bluePin, blue);  
+}
 
 // Function to scroll text on LCD (ex. of use: scrollInFromRight(1, "Line2 From Right");
 void scrollInFromRight (int line, char str1[]) {
@@ -307,4 +577,28 @@ void scrollInFromRight (int line, char str1[]) {
     delay(delayTime2);
   }
 }
+
+
+
+// function to check open and closed sensors to get current state of valve (Open or Closed)
+int checkValveState()
+{
+  boolean openCheck = false;
+  
+  if (!digitalRead(openSensorPin))
+  {
+   return STATE_VALVE_OPEN;
+  }
+  
+  if (!digitalRead(closeSensorPin))
+  {
+    return STATE_VALVE_CLOSED;
+  }
+  else
+  {
+    return STATE_VALVE_HALF;
+  }
+  
+}
+
 
