@@ -190,6 +190,15 @@ void loop()
 
 void mainLoop()
 {
+
+ if(digitalRead(liquidSesnorPin)==HIGH)
+ {
+  lcd.setCursor(0, 0);
+  lcd.print(" LIQUID ALERT! ");
+//  SendData("LIQUID");
+ }
+ else
+ {
   
   // Display info on LCD
 
@@ -202,11 +211,11 @@ void mainLoop()
   lcd.print(" LIQUID FLOWING  ");
   lcd.setCursor(0, 1);
   lcd.print(" \177 \177 \177 \177 \177 \177 \177 \177"); // Display arrow to the LCD screen (Octal)
-  delay(500);
-  lcd.setCursor(0, 1);
-  lcd.print("\177 \177 \177 \177 \177 \177 \177 \177 "); // Shift the arrows
-  delay(300);
-
+ // delay(500);
+ // lcd.setCursor(0, 1);
+ // lcd.print("\177 \177 \177 \177 \177 \177 \177 \177 "); // Shift the arrows
+ // delay(300);
+ }
 
 if(inTestMode) // open and close Test
 {
@@ -253,6 +262,7 @@ if(inTestMode) // open and close Test
 
         // Display info on LCD
         lcd.print("Valve Open!  ");
+        SendData("CLOSED");
       }
 
       // If order 2 received: Close the valve
@@ -271,7 +281,8 @@ if(inTestMode) // open and close Test
         closeValve(); // Close Valve
 
         // Display info on LCD
-        lcd.print("Valve close!");
+        lcd.print("Valve closed!");
+        SendData("CLOSED");
       }     
 
       // If order 3 received: send data to the server used for testing data
@@ -279,10 +290,26 @@ if(inTestMode) // open and close Test
       {
         ConnectToWebsite();  // Connect to the website
         SendData("Hello");  // Send data
-      }      
+      }  
+
+      if(pinNumber == 4) // valve test 
+      {
+       boolean outputResults =  testValve();
+
+  
+        ConnectToWebsite();  // Connect to the website
+        SendData("" + outputResults);  // Send data
+      }     
+          
     }
   }   
 }
+
+boolean testValve()
+{
+  return false; // code to be added here to test valve.
+}
+
 
 /* Function to initialise the ESP8266 */
 void InitESP8266()
@@ -338,10 +365,15 @@ void ConnectToWebsite()
 // Function to send data by GET request
 void SendData(String data)
 {
+
+  // commented out because of website not working.....
+  /*
+  if(!testWithoutWiFi)
+  {
   sendToESP8266("AT+CIPSEND=1,109"); //send message to connection 1, 109 bytes (87 bytes before char "?")
   receiveFromESP8266(10000);
 
-  String httpreq = "GET /~1613741/valve.php?will=" + data + " HTTP/1.1";
+  String httpreq = "GET /~1613741/valve.php?data=" + data + " HTTP/1.1";
   
   // Make a HTTP request:
   sendToESP8266(httpreq);
@@ -351,6 +383,8 @@ void SendData(String data)
   sendToESP8266("");   
   receiveFromESP8266(10000);
   Serial.println("\r\n");
+  }*/
+  
 }
 
 /* Function that send commands to the ESP8266 */
