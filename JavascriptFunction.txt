@@ -1,0 +1,51 @@
+		<script>
+			$( function() {
+				$( "#valOn" ).on( "click", function() {
+				  $( "#green" ).toggleClass( "highlightgreen", 1000 );
+				});
+			} );
+
+			$( function() {
+				$( "#valOn" ).on( "click", function() {
+					if ($( "#red" ).hasClass( "highlightred" )) {
+					  $( "#red" ).toggleClass( "highlightred", 1000 );
+					}
+				});
+			} );
+			
+
+			$( function() {
+				$( "#valOff" ).on( "click", function() {
+				  $( "#red" ).toggleClass( "highlightred", 1000 );
+				});
+			} );
+
+			
+			$( function() {
+				$( "#valOff" ).on( "click", function() {
+					if ($( "#green" ).hasClass( "highlightgreen" )) {
+					  $( "#green" ).toggleClass( "highlightgreen", 1000 );
+					}
+				});
+			} );
+
+				
+			$(document).ready(function(){
+				$("#valOff").click(function(){
+					$.get("http://172.25.24.14", {pin:2}); // execute get request
+				});
+			});
+			
+
+				
+			$(document).ready(function(){
+				$("#valOn").click(function(){
+					$.get("http://172.25.24.14", {pin:1}); // execute get request
+				});
+			});
+
+			$( function() {
+			  var $winHeight = $( window ).height()
+			  $( '.container' ).height( $winHeight );
+			});
+		</script>
