@@ -41,6 +41,7 @@ String Password = "12345678"; // Garder les guillemets
 boolean valveMoving = false;
 
 boolean startup = true; 
+boolean firstLoop = true;
 
 //#define COMMON_ANODE
 
@@ -93,7 +94,6 @@ void setup()
   pinMode(closeSensorPin,INPUT);
   pinMode(liquidSesnorPin,INPUT);
   
-  
  
 
   // Initialise the serial com
@@ -121,8 +121,6 @@ Serial.println("wifi setup");
   sendToESP8266("AT+CIOBAUD=9600");
   receiveFromESP8266(4000);
   ESP8266.begin(9600);  
-
- 
   InitESP8266();
   
   }
@@ -146,6 +144,14 @@ Serial.println("wifi setup");
 
 void loop()
 {
+
+if (firstLoop) // auto close when first booted up or there is emergency
+
+{
+  closeValve();
+  firstLoop = false;
+}
+
 // ------------------------------- Checks to see if there is liquid in the chamber  ------------------------------ //
 
 //----------------- POSSIBLE BUG BELOW WILL NEED TO BE CHANGED TO ACCOUNT FOR NORMAL LIQUID FLOW IN FINAL VERSION --------------------- 
@@ -288,7 +294,7 @@ if(inTestMode) // open and close Test
         // Display info on LCD
         lcd.clear();
         lcd.setCursor(0, 0);
-        lcd.print("Contamination!");
+        lcd.print("No Contamination!");
         lcd.setCursor(0, 1);
         lcd.print("Valve Opening");
         
@@ -329,8 +335,8 @@ if(inTestMode) // open and close Test
       if(pinNumber == 4) // valve test 
       {
        boolean outputResults =  testValve();
-       ConnectToWebsite();  // Connect to the website
-       SendData("" + outputResults);  // Send data
+     //  ConnectToWebsite();  // Connect to the website
+     //  SendData("" + outputResults);  // Send data
       }     
       
      
@@ -338,15 +344,28 @@ if(inTestMode) // open and close Test
       {
       software_Reset();
       }     
-      
-      
-          
     }
   }   
 }
 
+
+unsigned long timeTestStart;
+
 boolean testValve()
 {
+  timeTestStart = millis();
+  setColor(255, 0, 0);  // red
+  delay(500);
+  setColor(0, 255, 0);  // green
+  delay(500);
+  setColor(0, 0, 255);  // blue
+  delay(500); 
+  openValve();
+  delay(2000);
+  closeValve();
+
+
+
   return false; // code to be added here to test valve.
 }
 
