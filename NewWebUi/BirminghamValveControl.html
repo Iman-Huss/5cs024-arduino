@@ -297,13 +297,58 @@
                 </div>
                 <!-- /.row -->
                 <div class="row">
+                        <div class="col-lg-4">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i>New Valve</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        
+<div style="vertical-align: middle;margin:auto; width:50%">
+                  <div><LABEL for="addvalve" ><B>Add Valve:</B></LABEL>
+                    </div>
+                    <br>
+                  <div><INPUT type="text" id="addValveTB" placeholder="Enter valve name." name="valvetextbox" required>
+                  </div>
+                    <br>
+                    <div>
+                    <BUTTON type="button" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="addValve()">Add Valve</BUTTON>
+                    </div>
+                    <br>
+                    <div>
+                    <BUTTON type="button" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="removeValve()">Remove Valve</BUTTON> 
+                    </div>
+                    <br>
+                    <div>
+
+                  <BUTTON type"button" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="commit()">Commit Valve</BUTTON>
+                    </div>
+                    <br>
+                  <div>
+                    <BUTTON type"button" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="deleteAll()">Delete All</BUTTON>
+                </div>
+        
+                </div>
+                                    </div>
+                                </div>
+                            </div>
                     <div class="col-lg-4">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
+                                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve ControlER</h3>
                             </div>
                             <div class="panel-body">
-    
+                                   <div style="vertical-align: middle;margin:auto; width:50%"> 
+                                <LABEL for="valveName" ><B>Select Valve:</B></LABEL>
+                                    <SELECT id="valveSelect" name="valveName">
+                                      <OPTION value="a">1</OPTION>
+                                          <OPTION value="b">2</OPTION>
+                                          <OPTION value="c">3</OPTION>
+                                          <OPTION value="d">4</OPTION>
+                                      
+                                    </SELECT>
+                                    </div>
+                                    <br>
                                     <div style="vertical-align: middle;margin:auto; width:50%">
                                             <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
                                     </div>
@@ -313,17 +358,10 @@
                                     </div>
                                     <br>
                                     <div style="vertical-align: middle;margin:auto; width:50%">
-                                            <BUTTON id="valTest" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">TEST VALVE</BUTTON>
+                                            <BUTTON id="valTest" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">TEST VALVE</BUTTON>
                                     </div>
 
-                                    <LABEL for="valveName" ><B>Valves:</B></LABEL>
-                                    <SELECT id="valveSelect" name="valveName">
-                                      <OPTION value="a">1</OPTION>
-                                          <OPTION value="b">2</OPTION>
-                                          <OPTION value="c">3</OPTION>
-                                          <OPTION value="d">4</OPTION>
-                                      
-                                    </SELECT>
+
 
     
                                           <!--/
@@ -341,26 +379,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i>New Valve</h3>
-                            </div>
-                            <div class="panel-body">
-                                
-                                            
-          <LABEL for="addvalve" ><B>Add valve:</B></LABEL>
-          <INPUT type="text" id="addValveTB" placeholder="Enter valve name." name="valvetextbox" required>
-          <BUTTON type="button" onclick="addValve()">Add valve</BUTTON>
-          <BUTTON type="button" onclick="removeValve()">Remove valve</BUTTON> 
-          <p></p>
-          <p></p>
-          <BUTTON type="button" onclick="commit()">Commit</BUTTON>
-          <BUTTON type="button" onclick="deleteAll()">Delete all</BUTTON>
 
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <!-- /.row -->
 
