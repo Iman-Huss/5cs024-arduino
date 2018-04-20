@@ -40,18 +40,28 @@
             $(document).ready(function(){
                 $("#valOn").click(function(){
                     $.get("http://172.25.25.206", {pin:1}); // execute get request
+                    alert("OPENING VALVE");
                 });
             });
             $(document).ready(function(){
                 $("#valOff").click(function(){
                     $.get("http://172.25.25.206", {pin:2}); // execute get request
+                    alert("CLOSING VALVE");
                 });
             });
             $(document).ready(function(){
                 $("#valTest").click(function(){
                     $.get("http://172.25.25.206", {pin:4}); // execute get request
+                    alert("TESTING VALVE");
                 });
             });
+            $(document).ready(function(){
+                $("#valReset").click(function(){
+                    $.get("http://172.25.25.206", {pin:5}); // execute get request
+                    alert("EMERGENCY RESET");
+                });
+            });
+
 
             var siteData = [];
       var zoneData = [];
@@ -360,7 +370,9 @@
                                     <div style="vertical-align: middle;margin:auto; width:50%">
                                             <BUTTON id="valTest" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">TEST VALVE</BUTTON>
                                     </div>
-
+                                    <div style="vertical-align: middle;margin:auto; width:50%">
+                                            <BUTTON id="valReset" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">RESET VALVE</BUTTON>
+                                    </div>
 
 
     
