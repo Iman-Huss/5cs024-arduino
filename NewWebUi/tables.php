@@ -26,20 +26,6 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-<script src="js/jquery.min.js"></script>
-    <script>
-$(document).ready(function(){
-   $.ajax({
-        url:'DatabaseTest.php',
-        type:'GET', 
-        data:"parameter=some_parameter",
-       success:function(data)
-       {
-              $("#thisdiv").html(data);
-           }
-    });
-});
-</script>
 
 </head>
 
@@ -168,63 +154,30 @@ $(document).ready(function(){
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover table-striped">
 
-<div id="thisdiv"></div>
+                            <?php
+                            $servername = "mi-linux.wlv.ac.uk";
+                            $username = "1526056";
+                            $password = "mysql123";
+                            $databasename = "db1526056";
 
-                                <thead>
-                                    <tr>
-                                        <th>Valve ID</th>
-                                        <th>Status</th>
-                                        <th>Time</th>
-                                        <th>Zone</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>V1</td>
-                                        <td>Open</td>
-                                        <td>4:20</td>
-                                        <td>Walsall</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V2</td>
-                                        <td>Open</td>
-                                        <td>13:37</td>
-                                        <td>Birmingham</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V6</td>
-                                        <td>Closed</td>
-                                        <td>17:20</td>
-                                        <td>Walsall</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V8</td>
-                                        <td>Open</td>
-                                        <td>19:44</td>
-                                        <td>Birmingham</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V3</td>
-                                        <td>Closed</td>
-                                        <td>20:20</td>
-                                        <td>Walsall</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V4</td>
-                                        <td>Open</td>
-                                        <td>13:40</td>
-                                        <td>Birmingham</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V4</td>
-                                        <td>Closed</td>
-                                        <td>20:10</td>
-                                        <td>Redditch</td>
-                                    </tr>
-                                </tbody>
+                            $conn = new mysqli($servername, $username, $password, $databasename);
+
+                            $sql = "SELECT * FROM `Log`";
+                            $result = $conn->query($sql);
+
+                            if ($result->num_rows > 0) {
+                                echo "<table><tr><th>Valve ID</th><th>Status</th><th>Time</th><th>Site</th><th>Zone</th><th>Fault</th><th>Engineer</th></tr>";
+                                while($row = $result->fetch_assoc()) {
+                                    echo "<tr><td>".$row["valveid"]."</td><td>".$row["vstatus"]."</td><td>".$row["vtime"]."</td><td>".$row["site"]."</td><td>".$row["zone"]."</td><td>".$row["fdesc"]."</td><td>".$row["eno"]."</td></tr>";
+                                }
+                                echo "</table>";
+                            } else {
+                                echo "0 results.";
+                            }
+
+                            $conn->close();
+                            ?>
                             </table>
-                        </div>
-
                         </div>
                     </div>
 

@@ -47,7 +47,138 @@
                     $.get("http://172.25.25.206", {pin:2}); // execute get request
                 });
             });
+            $(document).ready(function(){
+                $("#valTest").click(function(){
+                    $.get("http://172.25.25.206", {pin:4}); // execute get request
+                });
+            });
+
+            var siteData = [];
+      var zoneData = [];
+      var valveData = [];  
+      var arrayLength = valveData.length;   
+      
+      
+    
+      
+      function addValve() 
+      
+      {  
+          var x = document.getElementById("valveSelect");
+          var option = document.createElement("option");
+          option.text = document.getElementById("addValveTB").value;
+          x.add(option);
+          valveData.push(document.getElementById("addValveTB").value);
+          document.getElementById("demo2").innerHTML = valveData;
+          var valveArrayLength = valveData.length;  
+          
+      }
+
+      function removeValve() {
+          var x = document.getElementById("valveSelect");
+          x.remove(x.selectedIndex);
+          
+      }
+      
+      function loadZone() {
+          var x = document.getElementById("valveSelect");
+          x.remove(x.selectedIndex);
+      }
+         
+      function deleteAll() {
+          localStorage.removeItem("valves");
+          localStorage.removeItem("check")  ;
+      }
+      
+      
+      
+      function loadPage() {
+            document.getElementById("demo3").innerHTML = localStorage.getItem("check");
+            
+      
+           if (localStorage.getItem("check") === null) 
+           {
+              localStorage.setItem("check", "1");   
+           }
+          
+          else
+          {
+          
+          var retrievedData = localStorage.getItem("valves"); 
+          valveData = JSON.parse(retrievedData);
+          document.getElementById("demo").innerHTML = valveData;
+          
+          var x = document.getElementById("valveSelect");
+          var option = document.createElement("option");
+          option.text = localStorage.getItem("valves");
+          x.add(option);
+          
+          
+          x.add(option);
+          uname = localStorage.getItem("username") ;
+          document.getElementById("userinfo").innerHTML = uname;; 
+          
+            
+          var valveArrayLength = valveData.length;
+          
+             
+             
+          
+          
+        var valveSel = document.getElementById('valveSelect');
+        var zoneSel = document.getElementById('zoneSelect');
+        var siteSel = document.getElementById('siteSelect');
+        
+        
+        for(var i = 0; i < valveArrayLength; i++) 
+        {
+          
+          var opt = document.createElement('option');
+          opt.innerHTML = valveData[i];
+          opt.textContent = valveData[i];
+          valveSel.appendChild(opt);
+        }
+           
+      }    
+           
+          
+      function showLoginInfo()
+      {
+          localStorage.setItem("username", uname);  
+          
+          document.getElementById("userinfo").innerHTML = uname;
+      }
+          
+          
+      }
+      
+      function commit()
+      {    
+          
+          
+          document.getElementById("demo").innerHTML = valveData;
+          document.getElementById("demo2").innerHTML = valveData.length;
+          
+          localStorage.setItem("valves", JSON.stringify(valveData));
+      }   
+      
+
+      
+    
+    
+            
+      
+      
+      var modal = document.getElementById("id01");
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
         </script>
+
 
 </head>
 
@@ -180,6 +311,20 @@
                                     <div style="vertical-align: middle;margin:auto; width:50%">
                                             <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
                                     </div>
+                                    <br>
+                                    <div style="vertical-align: middle;margin:auto; width:50%">
+                                            <BUTTON id="valTest" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">TEST VALVE</BUTTON>
+                                    </div>
+
+                                    <LABEL for="valveName" ><B>Valves:</B></LABEL>
+                                    <SELECT id="valveSelect" name="valveName">
+                                      <OPTION value="a">1</OPTION>
+                                          <OPTION value="b">2</OPTION>
+                                          <OPTION value="c">3</OPTION>
+                                          <OPTION value="d">4</OPTION>
+                                      
+                                    </SELECT>
+
     
                                           <!--/
                                         <LABEL for="choiceValve"><B>Valve:</B></LABEL>
@@ -193,6 +338,26 @@
                                         -->
     
     
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i>New Valve</h3>
+                            </div>
+                            <div class="panel-body">
+                                
+                                            
+          <LABEL for="addvalve" ><B>Add valve:</B></LABEL>
+          <INPUT type="text" id="addValveTB" placeholder="Enter valve name." name="valvetextbox" required>
+          <BUTTON type="button" onclick="addValve()">Add valve</BUTTON>
+          <BUTTON type="button" onclick="removeValve()">Remove valve</BUTTON> 
+          <p></p>
+          <p></p>
+          <BUTTON type="button" onclick="commit()">Commit</BUTTON>
+          <BUTTON type="button" onclick="deleteAll()">Delete all</BUTTON>
+
                             </div>
                         </div>
                     </div>
