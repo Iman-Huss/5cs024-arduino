@@ -27,19 +27,19 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 <script src="js/jquery.min.js"></script>
-    <script>
-$(document).ready(function(){
-   $.ajax({
-        url:'DatabaseTest.php',
-        type:'GET', 
-        data:"parameter=some_parameter",
-       success:function(data)
-       {
-              $("#thisdiv").html(data);
-           }
-    });
-});
-</script>
+    <!-- <script>
+		$(document).ready(function(){
+		   $.ajax({
+				url:'DatabaseTest.php',
+				type:'GET', 
+				data:"parameter=some_parameter",
+			   success:function(data)
+			   {
+					  $("#thisdiv").html(data);
+				   }
+			});
+		});
+	</script> -->
 
 </head>
 
@@ -175,51 +175,75 @@ $(document).ready(function(){
                                         <th>Valve ID</th>
                                         <th>Status</th>
                                         <th>Time</th>
+										<th>Site</th>
                                         <th>Zone</th>
+										<th>Fault?</th>
+										<th>Engineer</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td>V1</td>
                                         <td>Open</td>
-                                        <td>4:20</td>
+                                        <td>2018-04-20 04:13:56</td>
                                         <td>Walsall</td>
+										<td>A1</td>
+										<td>None</td>
+										<td>E1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>V2</td>
+                                        <td>Closed</td>
+                                        <td>2018-04-20 04:13:56</td>
+                                        <td>Birmingham</td>
+										<td>B6</td>
+										<td>Leakage</td>
+										<td>E7</td>
                                     </tr>
                                     <tr>
                                         <td>V2</td>
                                         <td>Open</td>
-                                        <td>13:37</td>
+                                        <td>2018-04-20 04:13:56</td>
                                         <td>Birmingham</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V6</td>
-                                        <td>Closed</td>
-                                        <td>17:20</td>
-                                        <td>Walsall</td>
+										<td>B6</td>
+										<td>Leakage Fixed</td>
+										<td>E7</td>
                                     </tr>
                                     <tr>
                                         <td>V8</td>
                                         <td>Open</td>
-                                        <td>19:44</td>
-                                        <td>Birmingham</td>
+                                        <td>2018-04-20 04:13:56</td>
+                                        <td>Wolverhampton</td>
+										<td>K9</td>
+										<td>None</td>
+										<td>E2</td>
                                     </tr>
                                     <tr>
                                         <td>V3</td>
                                         <td>Closed</td>
-                                        <td>20:20</td>
+                                        <td>2018-04-20 04:13:56</td>
                                         <td>Walsall</td>
+										<td>D9</td>
+										<td>None</td>
+										<td>E7</td>
                                     </tr>
                                     <tr>
                                         <td>V4</td>
                                         <td>Open</td>
-                                        <td>13:40</td>
+                                        <td>2018-04-20 04:13:56</td>
                                         <td>Birmingham</td>
+										<td>H5</td>
+										<td>None</td>
+										<td>E5</td>
                                     </tr>
                                     <tr>
                                         <td>V4</td>
                                         <td>Closed</td>
-                                        <td>20:10</td>
+                                        <td>2018-04-20 04:14:06</td>
                                         <td>Redditch</td>
+										<td>H5</td>
+										<td>None</td>
+										<td>E5</td>
                                     </tr>
                                 </tbody>
                             </table>
