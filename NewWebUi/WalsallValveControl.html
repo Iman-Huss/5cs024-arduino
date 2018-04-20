@@ -39,15 +39,156 @@
                 
             $(document).ready(function(){
                 $("#valOn").click(function(){
-                    $.get("http://172.25.27.206", {pin:1}); // execute get request
+                    $.get("http://172.25.25.206", {pin:1}); // execute get request
+                    alert("OPENING VALVE");
                 });
             });
             $(document).ready(function(){
                 $("#valOff").click(function(){
-                    $.get("http://172.25.27.206", {pin:2}); // execute get request
+                    $.get("http://172.25.25.206", {pin:2}); // execute get request
+                    alert("CLOSING VALVE");
                 });
             });
+            $(document).ready(function(){
+                $("#valTest").click(function(){
+                    $.get("http://172.25.25.206", {pin:4}); // execute get request
+                    alert("TESTING VALVE");
+                });
+            });
+            $(document).ready(function(){
+                $("#valReset").click(function(){
+                    $.get("http://172.25.25.206", {pin:5}); // execute get request
+                    alert("EMERGENCY RESET");
+                });
+            });
+
+
+            var siteData = [];
+      var zoneData = [];
+      var valveData = [];  
+      var arrayLength = valveData.length;   
+      
+      
+    
+      
+      function addValve() 
+      
+      {  
+          var x = document.getElementById("valveSelect");
+          var option = document.createElement("option");
+          option.text = document.getElementById("addValveTB").value;
+          x.add(option);
+          valveData.push(document.getElementById("addValveTB").value);
+          document.getElementById("demo2").innerHTML = valveData;
+          var valveArrayLength = valveData.length;  
+          
+      }
+
+      function removeValve() {
+          var x = document.getElementById("valveSelect");
+          x.remove(x.selectedIndex);
+          
+      }
+      
+      function loadZone() {
+          var x = document.getElementById("valveSelect");
+          x.remove(x.selectedIndex);
+      }
+         
+      function deleteAll() {
+          localStorage.removeItem("valves");
+          localStorage.removeItem("check")  ;
+      }
+      
+      
+      
+      function loadPage() {
+            document.getElementById("demo3").innerHTML = localStorage.getItem("check");
+            
+      
+           if (localStorage.getItem("check") === null) 
+           {
+              localStorage.setItem("check", "1");   
+           }
+          
+          else
+          {
+          
+          var retrievedData = localStorage.getItem("valves"); 
+          valveData = JSON.parse(retrievedData);
+          document.getElementById("demo").innerHTML = valveData;
+          
+          var x = document.getElementById("valveSelect");
+          var option = document.createElement("option");
+          option.text = localStorage.getItem("valves");
+          x.add(option);
+          
+          
+          x.add(option);
+          uname = localStorage.getItem("username") ;
+          document.getElementById("userinfo").innerHTML = uname;; 
+          
+            
+          var valveArrayLength = valveData.length;
+          
+             
+             
+          
+          
+        var valveSel = document.getElementById('valveSelect');
+        var zoneSel = document.getElementById('zoneSelect');
+        var siteSel = document.getElementById('siteSelect');
+        
+        
+        for(var i = 0; i < valveArrayLength; i++) 
+        {
+          
+          var opt = document.createElement('option');
+          opt.innerHTML = valveData[i];
+          opt.textContent = valveData[i];
+          valveSel.appendChild(opt);
+        }
+           
+      }    
+           
+          
+      function showLoginInfo()
+      {
+          localStorage.setItem("username", uname);  
+          
+          document.getElementById("userinfo").innerHTML = uname;
+      }
+          
+          
+      }
+      
+      function commit()
+      {    
+          
+          
+          document.getElementById("demo").innerHTML = valveData;
+          document.getElementById("demo2").innerHTML = valveData.length;
+          
+          localStorage.setItem("valves", JSON.stringify(valveData));
+      }   
+      
+
+      
+    
+    
+            
+      
+      
+      var modal = document.getElementById("id01");
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
         </script>
+
 
 </head>
 
@@ -166,13 +307,59 @@
                 </div>
                 <!-- /.row -->
                 <div class="row">
+                        <div class="col-lg-4">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i>New Valve</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        
+<div style="vertical-align: middle;margin:auto; width:50%">
+                  <div><LABEL for="addvalve" ><B>Add Valve:</B></LABEL>
+                    </div>
+                    <br>
+                  <div><INPUT type="text" id="addValveTB" placeholder="Enter valve name." name="valvetextbox" required>
+                  </div>
+                    <br>
+                    <div>
+                    <BUTTON type="button" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="addValve()">Add Valve</BUTTON>
+                    </div>
+                    <br>
+                    <div>
+                    <BUTTON type="button" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="removeValve()">Remove Valve</BUTTON> 
+                    </div>
+                    <br>
+                    <div>
+
+                  <BUTTON type"button" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="commit()">Commit Valve</BUTTON>
+                    </div>
+                    <br>
+                  <div>
+                    <BUTTON type"button" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="deleteAll()">Delete All</BUTTON>
+                </div>
+        
+                </div>
+                                    </div>
+                                </div>
+                            </div>
                     <div class="col-lg-4">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
+                                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve Controller</h3>
                             </div>
                             <div class="panel-body">
-    
+                                   <div style="vertical-align: middle;margin:auto; width:50%"> 
+                                <LABEL for="valveName" ><B>Select Valve:</B></LABEL>
+                                <br>
+                                    <SELECT id="valveSelect" name="valveName">
+                                      <OPTION value="a">1</OPTION>
+                                          <OPTION value="b">2</OPTION>
+                                          <OPTION value="c">3</OPTION>
+                                          <OPTION value="d">4</OPTION>
+                                      
+                                    </SELECT>
+                                    </div>
+                                    <br>
                                     <div style="vertical-align: middle;margin:auto; width:50%">
                                             <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
                                     </div>
@@ -180,6 +367,16 @@
                                     <div style="vertical-align: middle;margin:auto; width:50%">
                                             <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
                                     </div>
+                                    <br>
+                                    <div style="vertical-align: middle;margin:auto; width:50%">
+                                            <BUTTON id="valTest" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">TEST VALVE</BUTTON>
+                                    </div>
+                                    <br>
+                                    <div style="vertical-align: middle;margin:auto; width:50%">
+                                            <BUTTON id="valReset" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">RESET VALVE</BUTTON>
+                                    </div>
+
+
     
                                           <!--/
                                         <LABEL for="choiceValve"><B>Valve:</B></LABEL>
@@ -196,340 +393,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
-                            </div>
-                            <div class="panel-body">
-    
-                                    <div style="vertical-align: middle; margin:auto; width:50%">
-                                            <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-                                    </div>
-                                            <br>
-                                    <div style="vertical-align: middle; margin:auto; width:50%;">
-                                            <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-                                    </div>
-    
-                                          <!--/
-                                        <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                                    
-                                            <SELECT id="choiceValve" name="choiceValveName">
-                                            <OPTION value="a">1</OPTION>
-                                            <OPTION value="b">2</OPTION>
-                                            <OPTION value="c">3</OPTION>
-                                            <OPTION value="d">4</OPTION>
-                                    </SELECT>
-                                        -->
-    
-    
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
-                            </div>
-                            <div class="panel-body">
-    
-                                    <div style="vertical-align: middle; margin:auto; width:50%">
-                                            <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-                                    </div>
-                                            <br>
-                                    <div style="vertical-align: middle; margin:auto; width:50%;">
-                                            <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-                                    </div>
-    
-                                          <!--/
-                                        <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                                    
-                                            <SELECT id="choiceValve" name="choiceValveName">
-                                            <OPTION value="a">1</OPTION>
-                                            <OPTION value="b">2</OPTION>
-                                            <OPTION value="c">3</OPTION>
-                                            <OPTION value="d">4</OPTION>
-                                    </SELECT>
-                                        -->
-    
-    
-                            </div>
-                        </div>
-                    </div>
-    </div><div class="row">
-        <div class="col-lg-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
-                </div>
-                <div class="panel-body">
-
-                        <div style="vertical-align: middle;margin:auto; width:50%">
-                                <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-                        </div>
-                                <br>
-                        <div style="vertical-align: middle;margin:auto; width:50%">
-                                <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-                        </div>
-
-                              <!--/
-                            <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                        
-                                <SELECT id="choiceValve" name="choiceValveName">
-                                <OPTION value="a">1</OPTION>
-                                <OPTION value="b">2</OPTION>
-                                <OPTION value="c">3</OPTION>
-                                <OPTION value="d">4</OPTION>
-                        </SELECT>
-                            -->
-
 
                 </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
-                </div>
-                <div class="panel-body">
-
-                        <div style="vertical-align: middle; margin:auto; width:50%">
-                                <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-                        </div>
-                                <br>
-                        <div style="vertical-align: middle; margin:auto; width:50%;">
-                                <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-                        </div>
-
-                              <!--/
-                            <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                        
-                                <SELECT id="choiceValve" name="choiceValveName">
-                                <OPTION value="a">1</OPTION>
-                                <OPTION value="b">2</OPTION>
-                                <OPTION value="c">3</OPTION>
-                                <OPTION value="d">4</OPTION>
-                        </SELECT>
-                            -->
-
-
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
-                </div>
-                <div class="panel-body">
-
-                        <div style="vertical-align: middle; margin:auto; width:50%">
-                                <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-                        </div>
-                                <br>
-                        <div style="vertical-align: middle; margin:auto; width:50%;">
-                                <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-                        </div>
-
-                              <!--/
-                            <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                        
-                                <SELECT id="choiceValve" name="choiceValveName">
-                                <OPTION value="a">1</OPTION>
-                                <OPTION value="b">2</OPTION>
-                                <OPTION value="c">3</OPTION>
-                                <OPTION value="d">4</OPTION>
-                        </SELECT>
-                            -->
-
-
-                </div>
-            </div>
-        </div>
-</div><div class="row">
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
-            </div>
-            <div class="panel-body">
-
-                    <div style="vertical-align: middle;margin:auto; width:50%">
-                            <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-                    </div>
-                            <br>
-                    <div style="vertical-align: middle;margin:auto; width:50%">
-                            <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-                    </div>
-
-                          <!--/
-                        <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                    
-                            <SELECT id="choiceValve" name="choiceValveName">
-                            <OPTION value="a">1</OPTION>
-                            <OPTION value="b">2</OPTION>
-                            <OPTION value="c">3</OPTION>
-                            <OPTION value="d">4</OPTION>
-                    </SELECT>
-                        -->
-
-
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
-            </div>
-            <div class="panel-body">
-
-                    <div style="vertical-align: middle; margin:auto; width:50%">
-                            <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-                    </div>
-                            <br>
-                    <div style="vertical-align: middle; margin:auto; width:50%;">
-                            <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-                    </div>
-
-                          <!--/
-                        <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                    
-                            <SELECT id="choiceValve" name="choiceValveName">
-                            <OPTION value="a">1</OPTION>
-                            <OPTION value="b">2</OPTION>
-                            <OPTION value="c">3</OPTION>
-                            <OPTION value="d">4</OPTION>
-                    </SELECT>
-                        -->
-
-
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
-            </div>
-            <div class="panel-body">
-
-                    <div style="vertical-align: middle; margin:auto; width:50%">
-                            <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-                    </div>
-                            <br>
-                    <div style="vertical-align: middle; margin:auto; width:50%;">
-                            <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-                    </div>
-
-                          <!--/
-                        <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                    
-                            <SELECT id="choiceValve" name="choiceValveName">
-                            <OPTION value="a">1</OPTION>
-                            <OPTION value="b">2</OPTION>
-                            <OPTION value="c">3</OPTION>
-                            <OPTION value="d">4</OPTION>
-                    </SELECT>
-                        -->
-
-
-            </div>
-        </div>
-    </div>
-</div><div class="row">
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
-            </div>
-            <div class="panel-body">
-
-                    <div style="vertical-align: middle;margin:auto; width:50%">
-                            <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-                    </div>
-                            <br>
-                    <div style="vertical-align: middle;margin:auto; width:50%">
-                            <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-                    </div>
-
-                          <!--/
-                        <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                    
-                            <SELECT id="choiceValve" name="choiceValveName">
-                            <OPTION value="a">1</OPTION>
-                            <OPTION value="b">2</OPTION>
-                            <OPTION value="c">3</OPTION>
-                            <OPTION value="d">4</OPTION>
-                    </SELECT>
-                        -->
-
-
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
-            </div>
-            <div class="panel-body">
-
-                    <div style="vertical-align: middle; margin:auto; width:50%">
-                            <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-                    </div>
-                            <br>
-                    <div style="vertical-align: middle; margin:auto; width:50%;">
-                            <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-                    </div>
-
-                          <!--/
-                        <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                    
-                            <SELECT id="choiceValve" name="choiceValveName">
-                            <OPTION value="a">1</OPTION>
-                            <OPTION value="b">2</OPTION>
-                            <OPTION value="c">3</OPTION>
-                            <OPTION value="d">4</OPTION>
-                    </SELECT>
-                        -->
-
-
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve 1 Controls</h3>
-            </div>
-            <div class="panel-body">
-
-                    <div style="vertical-align: middle; margin:auto; width:50%">
-                            <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-                    </div>
-                            <br>
-                    <div style="vertical-align: middle; margin:auto; width:50%;">
-                            <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-                    </div>
-
-                          <!--/
-                        <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                    
-                            <SELECT id="choiceValve" name="choiceValveName">
-                            <OPTION value="a">1</OPTION>
-                            <OPTION value="b">2</OPTION>
-                            <OPTION value="c">3</OPTION>
-                            <OPTION value="d">4</OPTION>
-                    </SELECT>
-                        -->
-
-
-            </div>
-        </div>
-    </div>
-</div>
                 <!-- /.row -->
 
             </div>
