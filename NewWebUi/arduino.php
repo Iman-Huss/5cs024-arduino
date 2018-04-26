@@ -1,22 +1,12 @@
 <?php
 	include "connect.php";
-	
-	$var1 = $_GET['stateValve'];
-	$var2 = $_GET['contDetect'];
-	$var3 = $_GET['emerPush'];
-	$var4 = $_GET['zone'];
-	$var5 = $_GET['valveId'];
-	$var6 = $_GET['site'];
 
-	// example of updating a valve
-	$sql1 = "UPDATE `Valve` SET `valveid` = '" + $var5 + " '";
-	
-	//example of inserting a new valve
-	$sql2 = "INSERT INTO `Valve` (`valveid`, `vstatus`, `site`) VALUES ('" . $var5 . "', '" . $var1 . "', " . $var6 . ");";
-	
-	if ($conn->query($sql2) === TRUE) {
+	$sql = "INSERT INTO `Valve` (`valveid`, `vstatus`, `cstatus`, `site`, `zone`, `fdesc`, `eno`, `emerpush`)
+				VALUES ('V1', 'Open', 'Empty', 'Birmingham', 'A1', 'None', 'Adam', 'No');";
+
+	if ($conn->query($sql) === TRUE) {
 		echo "";
-	} else echo "Error: " . $sql2 . "<br>" . $conn->error;
+	} else echo "Error updating record: " . $conn->error;
 
 	$conn->close();
-?>
+	?>
