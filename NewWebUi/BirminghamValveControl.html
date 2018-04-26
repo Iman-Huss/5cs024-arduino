@@ -39,7 +39,7 @@
                 
             $(document).ready(function(){
                 $("#valOn").click(function(){
-                    $.get("http://172.25.24.167", {pin:1}); // execute get request
+                    $.get("http://172.25.25.206", {pin:1}); // execute get request
                     alert("OPENING VALVE");
                 });
             });
@@ -81,9 +81,22 @@
           valveData.push(document.getElementById("addValveTB").value);
           document.getElementById("demo2").innerHTML = valveData;
           var valveArrayLength = valveData.length;  
-          
+		  
       }
 
+	  function storeValve()
+	  {
+		$.ajax({
+			method: "POST",
+			url: "addvalve.php",
+			data: { 
+				vid: $('#addValveTB').val()
+			}
+		}).done(function(response) {
+			$("#output").html(response);
+		});
+	  }
+	  
       function removeValve() {
           var x = document.getElementById("valveSelect");
           x.remove(x.selectedIndex);
@@ -313,32 +326,32 @@
                                         <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i>New Valve</h3>
                                     </div>
                                     <div class="panel-body">
-                                        
-<div style="vertical-align: middle;margin:auto; width:50%">
-                  <div><LABEL for="addvalve" ><B>Add Valve:</B></LABEL>
-                    </div>
-                    <br>
-                  <div><INPUT type="text" id="addValveTB" placeholder="Enter valve name." name="valvetextbox" required>
-                  </div>
-                    <br>
-                    <div>
-                    <BUTTON type="button" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="addValve()">Add Valve</BUTTON>
-                    </div>
-                    <br>
-                    <div>
-                    <BUTTON type="button" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="removeValve()">Remove Valve</BUTTON> 
-                    </div>
-                    <br>
-                    <div>
-
-                  <BUTTON type"button" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="commit()">Commit Valve</BUTTON>
-                    </div>
-                    <br>
-                  <div>
-                    <BUTTON type"button" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="deleteAll()">Delete All</BUTTON>
-                </div>
-        
-                </div>
+										<div style="vertical-align: middle;margin:auto; width:50%">
+											<div>
+												<LABEL for="addvalve"><B>Add Valve:</B></LABEL>
+											</div>
+											    <br>
+											<div>
+												<INPUT type="text" id="addValveTB" placeholder="Enter valve name." name="valvetextbox" required>
+											</div>
+												<br>
+											<div>
+												<BUTTON type="button" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="storeValve()">Add Valve</BUTTON>
+												<div id = output></div>
+											</div>
+												<br>
+											<div>
+												<BUTTON type="button" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="removeValve()">Remove Valve</BUTTON> 
+											</div>
+												<br>
+											<div>
+												<BUTTON type"button" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="commit()">Commit Valve</BUTTON>
+											</div>
+												<br>
+											<div>
+												<BUTTON type"button" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="deleteAll()">Delete All</BUTTON>
+											</div>	
+										</div>
                                     </div>
                                 </div>
                             </div>
@@ -373,7 +386,9 @@
                                     </div>
                                     <br>
                                     <div style="vertical-align: middle;margin:auto; width:50%">
+											<form action="testvalve.php" method="POST" target="_blank">
                                             <BUTTON id="valTest" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">TEST VALVE</BUTTON>
+											</form>
                                     </div>
                                     <br>
                                     <div style="vertical-align: middle;margin:auto; width:50%">
