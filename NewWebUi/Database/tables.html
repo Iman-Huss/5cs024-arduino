@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Charts</title>
+    <title>Tables</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -17,14 +17,8 @@
     <!-- Custom CSS -->
     <link href="css/sb-admin.css" rel="stylesheet">
 
-    <!-- Morris Charts CSS -->
-    <link href="css/plugins/morris.css" rel="stylesheet">
-
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9fvGU4bxhh4emOtGqur4lcM6Cv7I23tY
-    Y&callback=myMap"></script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -32,15 +26,20 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-<script>    function myMap() {
-    var mapCanvas = document.getElementById("map");
-    var mapOptions = {
-        center: new google.maps.LatLng(51.5, -0.2),
-        zoom: 10
-    };
-    var map = new google.maps.Map(mapCanvas, mapOptions);
-}
-</script>
+<script src="js/jquery.min.js"></script>
+    <!-- <script>
+		$(document).ready(function(){
+		   $.ajax({
+				url:'DatabaseTest.php',
+				type:'GET', 
+				data:"parameter=some_parameter",
+			   success:function(data)
+			   {
+					  $("#thisdiv").html(data);
+				   }
+			});
+		});
+	</script> -->
 
 </head>
 
@@ -125,10 +124,10 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="active">
+                    <li>
                         <a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
                     </li>
-                    <li>
+                    <li class="active">
                         <a href="tables.html"><i class="fa fa-fw fa-table"></i> Tables</a>
                     </li>
                     <li>
@@ -136,7 +135,6 @@
             </div>
             <!-- /.navbar-collapse -->
         </nav>
-        
         <div id="page-wrapper">
 
             <div class="container-fluid">
@@ -145,83 +143,119 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h1 class="page-header">
-                            Charts
+                            Tables <small>Valve Logs</small>
                         </h1>
                         <ol class="breadcrumb">
                             <li>
                                 <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
                             </li>
                             <li class="active">
-                                <i class="fa fa-bar-chart-o"></i> Charts
+                                <i class="fa fa-table"></i> Tables
                             </li>
                         </ol>
                     </div>
                 </div>
                 <!-- /.row -->
 
-
-                <!-- /.row -->
-
                 <div class="row">
-                    <div class="col-lg-12">
-                        <div class="panel panel-green">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i>Total Flow Rates</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="morris-area-chart"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-
-                        <div id="map" style="width:100%;height:400px;"></div>
-
+                
                 </div>
                 <!-- /.row -->
 
                 <div class="row">
-                    <div class="col-lg-4">
-                        <div class="panel panel-yellow">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i>Overall Valve Status</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="morris-donut-chart"></div>
-                                <div class="text-right">
-                                    <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
-                                </div>
-                            </div>
+                    <div class="col-lg-6">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Valve ID</th>
+                                        <th>Status</th>
+                                        <th>Time</th>
+										<th>Site</th>
+                                        <th>Zone</th>
+										<th>Fault?</th>
+										<th>Engineer</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>V1</td>
+                                        <td>Open</td>
+                                        <td>2018-04-20 04:13:56</td>
+                                        <td>Walsall</td>
+										<td>A1</td>
+										<td>None</td>
+										<td>E1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>V2</td>
+                                        <td>Closed</td>
+                                        <td>2018-04-20 04:13:56</td>
+                                        <td>Birmingham</td>
+										<td>B6</td>
+										<td>Leakage</td>
+										<td>E7</td>
+                                    </tr>
+                                    <tr>
+                                        <td>V2</td>
+                                        <td>Open</td>
+                                        <td>2018-04-20 04:13:56</td>
+                                        <td>Birmingham</td>
+										<td>B6</td>
+										<td>Leakage Fixed</td>
+										<td>E7</td>
+                                    </tr>
+                                    <tr>
+                                        <td>V8</td>
+                                        <td>Open</td>
+                                        <td>2018-04-20 04:13:56</td>
+                                        <td>Wolverhampton</td>
+										<td>K9</td>
+										<td>None</td>
+										<td>E2</td>
+                                    </tr>
+                                    <tr>
+                                        <td>V3</td>
+                                        <td>Closed</td>
+                                        <td>2018-04-20 04:13:56</td>
+                                        <td>Walsall</td>
+										<td>D9</td>
+										<td>None</td>
+										<td>E7</td>
+                                    </tr>
+                                    <tr>
+                                        <td>V4</td>
+                                        <td>Open</td>
+                                        <td>2018-04-20 04:13:56</td>
+                                        <td>Birmingham</td>
+										<td>H5</td>
+										<td>None</td>
+										<td>E5</td>
+                                    </tr>
+                                    <tr>
+                                        <td>V4</td>
+                                        <td>Closed</td>
+                                        <td>2018-04-20 04:14:06</td>
+                                        <td>Redditch</td>
+										<td>H5</td>
+										<td>None</td>
+										<td>E5</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
+						
+						<h3>Valve Data</h3>
+
+						<form action="display.php" method="POST">
+						<p>Enter Valve ID:</p>
+						<input type="text" name="vid">
+						<input type="submit" name="submitvalve" value="Submit">
+						
+						
+						</div>
                     </div>
 
-                    <div class="col-lg-4">
-                        <div class="panel panel-primary">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i>Valve Requests By Site</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="morris-bar-chart"></div>
-                                <div class="text-right">
-                                    <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="panel panel-red">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-long-arrow-right"></i>Rate Of Flow Increase</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="morris-line-chart"></div>
-                                <div class="text-right">
-                                    <a href="#">View Details <i class="fa fa-arrow-circle-right"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 <!-- /.row -->
 
@@ -239,19 +273,6 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
-
-    <!-- Morris Charts JavaScript -->
-    <script src="js/plugins/morris/raphael.min.js"></script>
-    <script src="js/plugins/morris/morris.min.js"></script>
-    <script src="js/plugins/morris/morris-data.js"></script>
-
-    <!-- Flot Charts JavaScript -->
-    <!--[if lte IE 8]><script src="js/excanvas.min.js"></script><![endif]-->
-    <script src="js/plugins/flot/jquery.flot.js"></script>
-    <script src="js/plugins/flot/jquery.flot.tooltip.min.js"></script>
-    <script src="js/plugins/flot/jquery.flot.resize.js"></script>
-    <script src="js/plugins/flot/jquery.flot.pie.js"></script>
-    <script src="js/plugins/flot/flot-data.js"></script>
 
 </body>
 
