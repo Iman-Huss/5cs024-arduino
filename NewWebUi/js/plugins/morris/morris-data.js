@@ -6,59 +6,69 @@ $(function() {
     Morris.Area({
         element: 'morris-area-chart',
         data: [{
-            period: '2010 Q1',
-            Wolverhampton: 2666,
-            Birmingham: null,
-            Walsall: 2647
+            period: '2015 Q1',
+            Birmingham: 8432,
+            Redditch: 5713,
+            Walsall: 1791,
+            Wolverhampton: 4988
         }, {
-            period: '2010 Q2',
-            Wolverhampton: 2778,
-            Birmingham: 2294,
-            Walsall: 2441
+            period: '2015 Q2',
+            Birmingham: 8322,
+            Redditch: 4321,
+            Walsall: 6857,
+            Wolverhampton: 5124
         }, {
-            period: '2010 Q3',
-            Wolverhampton: 4912,
-            Birmingham: 1969,
-            Walsall: 2501
+            period: '2015 Q3',
+            Birmingham: 8492,
+            Redditch: 5452,
+            Walsall: 3245,
+            Wolverhampton: 8764
         }, {
-            period: '2010 Q4',
-            Wolverhampton: 3767,
-            Birmingham: 3597,
-            Walsall: 5689
+            period: '2015 Q4',
+            Birmingham: 1234,
+            Redditch: 8563,
+            Walsall: 1791,
+            Wolverhampton: 4988
         }, {
-            period: '2011 Q1',
-            Wolverhampton: 6810,
-            Birmingham: 1914,
-            Walsall: 2293
+            period: '2016 Q1',
+            Birmingham: 1232,
+            Redditch: 5433,
+            Walsall: 5433,
+            Wolverhampton: 8653
         }, {
-            period: '2011 Q2',
-            Wolverhampton: 5670,
-            Birmingham: 4293,
-            Walsall: 1881
+            period: '2016 Q2',
+            Birmingham: 7653,
+            Redditch: 5564,
+            Walsall: 1223,
+            Wolverhampton: 7642
         }, {
-            period: '2011 Q3',
-            Wolverhampton: 4820,
-            Birmingham: 3795,
-            Walsall: 1588
+            period: '2016 Q3',
+            Birmingham: 4532,
+            Redditch: 8542,
+            Walsall: 1254,
+            Wolverhampton: 7645
         }, {
-            period: '2011 Q4',
-            Wolverhampton: 15073,
-            Birmingham: 5967,
-            Walsall: 5175
+            period: '2016 Q4',
+            Birmingham: 8432,
+            Redditch: 5713,
+            Walsall: 1791,
+            Wolverhampton: 4988
         }, {
-            period: '2012 Q1',
-            Wolverhampton: 10687,
-            Birmingham: 4460,
-            Walsall: 2028
+            period: '2017 Q1',
+            Birmingham: 7656,
+            Redditch: 976,
+            Walsall: 1132,
+            Wolverhampton: 5243
         }, {
-            period: '2012 Q2',
-            Wolverhampton: 8432,
-            Birmingham: 5713,
-            Walsall: 1791
+            period: '2017 Q2',
+            Birmingham: 5432,
+            Redditch: 3411,
+            Walsall: 1791,
+            Wolverhampton: 2342
         }],
         xkey: 'period',
-        ykeys: ['Wolverhampton', 'Birmingham', 'Walsall'],
-        labels: ['Wolverhampton', 'Birmingham', 'Walsall'],
+        ykeys: ['Birmingham', 'Redditch', 'Walsall','Wolverhampton'],
+        labels: ['Birmingham', 'Redditch', 'Walsall','Wolverhampton'],
         pointSize: 2,
         hideHover: 'auto',
         resize: true
@@ -84,102 +94,102 @@ $(function() {
         // Chart data records -- each entry in this array corresponds to a point on
         // the chart.
         data: [{
-            d: '2012-10-01',
-            visits: 802
+            d: '2017-10-01',
+            Flow: 802
         }, {
-            d: '2012-10-02',
-            visits: 783
+            d: '2017-10-02',
+            Flow: 783
         }, {
-            d: '2012-10-03',
-            visits: 820
+            d: '2017-10-03',
+            Flow: 820
         }, {
-            d: '2012-10-04',
-            visits: 839
+            d: '2017-10-04',
+            Flow: 839
         }, {
-            d: '2012-10-05',
-            visits: 792
+            d: '2017-10-05',
+            Flow: 792
         }, {
-            d: '2012-10-06',
-            visits: 859
+            d: '2017-10-06',
+            Flow: 859
         }, {
-            d: '2012-10-07',
-            visits: 790
+            d: '2017-10-07',
+            Flow: 790
         }, {
-            d: '2012-10-08',
-            visits: 1680
+            d: '2017-10-08',
+            Flow: 1680
         }, {
-            d: '2012-10-09',
-            visits: 1592
+            d: '2017-10-09',
+            Flow: 1592
         }, {
-            d: '2012-10-10',
-            visits: 1420
+            d: '2017-10-10',
+            Flow: 1420
         }, {
-            d: '2012-10-11',
-            visits: 882
+            d: '2017-10-11',
+            Flow: 882
         }, {
-            d: '2012-10-12',
-            visits: 889
+            d: '2017-10-12',
+            Flow: 889
         }, {
-            d: '2012-10-13',
-            visits: 819
+            d: '2017-10-13',
+            Flow: 819
         }, {
-            d: '2012-10-14',
-            visits: 849
+            d: '2017-10-14',
+            Flow: 849
         }, {
-            d: '2012-10-15',
-            visits: 870
+            d: '2017-10-15',
+            Flow: 870
         }, {
-            d: '2012-10-16',
-            visits: 1063
+            d: '2017-10-16',
+            Flow: 1063
         }, {
-            d: '2012-10-17',
-            visits: 1192
+            d: '2017-10-17',
+            Flow: 1192
         }, {
-            d: '2012-10-18',
-            visits: 1224
+            d: '2017-10-18',
+            Flow: 1224
         }, {
-            d: '2012-10-19',
-            visits: 1329
+            d: '2017-10-19',
+            Flow: 1329
         }, {
-            d: '2012-10-20',
-            visits: 1329
+            d: '2017-10-20',
+            Flow: 1329
         }, {
-            d: '2012-10-21',
-            visits: 1239
+            d: '2017-10-21',
+            Flow: 1239
         }, {
-            d: '2012-10-22',
-            visits: 1190
+            d: '2017-10-22',
+            Flow: 1190
         }, {
-            d: '2012-10-23',
-            visits: 1312
+            d: '2017-10-23',
+            Flow: 1312
         }, {
-            d: '2012-10-24',
-            visits: 1293
+            d: '2017-10-24',
+            Flow: 1293
         }, {
-            d: '2012-10-25',
-            visits: 1283
+            d: '2017-10-25',
+            Flow: 1283
         }, {
-            d: '2012-10-26',
-            visits: 1248
+            d: '2017-10-26',
+            Flow: 1248
         }, {
-            d: '2012-10-27',
-            visits: 1323
+            d: '2017-10-27',
+            Flow: 1323
         }, {
-            d: '2012-10-28',
-            visits: 1390
+            d: '2017-10-28',
+            Flow: 1390
         }, {
-            d: '2012-10-29',
-            visits: 1420
+            d: '2017-10-29',
+            Flow: 1420
         }, {
-            d: '2012-10-30',
-            visits: 1529
+            d: '2017-10-30',
+            Flow: 1529
         }, {
-            d: '2012-10-31',
-            visits: 1892
+            d: '2017-10-31',
+            Flow: 1892
         }, ],
-        // The name of the data record attribute that contains x-visitss.
+        // The name of the data record attribute that contains x-Flows.
         xkey: 'd',
-        // A list of names of data record attributes that contain y-visitss.
+        // A list of names of data record attributes that contain y-Flows.
         ykeys: ['Flow'],
         // Labels for the ykeys -- will be displayed when you hover over the
         // chart.
