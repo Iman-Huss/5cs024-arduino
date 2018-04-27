@@ -64,7 +64,7 @@ $(function() {
             Birmingham: 5432,
             Redditch: 3411,
             Walsall: 1791,
-            Wolverhampton: 2342
+            Wolverhampton: 23422
         }],
         xkey: 'period',
         ykeys: ['Birmingham', 'Redditch', 'Walsall','Wolverhampton'],
@@ -203,27 +203,21 @@ $(function() {
     Morris.Bar({
         element: 'morris-bar-chart',
         data: [{
-            device: 'Wolverhampton',
+            device: 'Birmingham',
             geekbench: 136
         }, {
-            device: 'Wolverhampton 3G',
+            device: 'Redditch',
             geekbench: 137
         }, {
-            device: 'Wolverhampton 3GS',
+            device: 'Walsall',
             geekbench: 275
         }, {
-            device: 'Wolverhampton 4',
+            device: 'Wolverhampton',
             geekbench: 380
-        }, {
-            device: 'Wolverhampton 4S',
-            geekbench: 655
-        }, {
-            device: 'Wolverhampton 5',
-            geekbench: 1571
         }],
         xkey: 'device',
         ykeys: ['geekbench'],
-        labels: ['Geekbench'],
+        labels: ['Flow'],
         barRatio: 0.4,
         xLabelAngle: 35,
         hideHover: 'auto',
