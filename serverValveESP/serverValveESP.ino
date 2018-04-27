@@ -11,6 +11,10 @@ const char* password = "m0{C8520";
 ESP8266WebServer server(80);
 
 
+IPAddress ip(192,168,137,153);
+IPAddress gateway(192,168,137,1);
+IPAddress subnet(255,255,255,0);
+
  
 void writeString(String stringData) { // Used to serially push out a String with Serial.write()
 
@@ -56,10 +60,11 @@ void handleNotFound(){
 
 void setup(void){
   
-  
+  WiFi.config(ip,gateway,subnet); 
   
   Serial.begin(9600);
   WiFi.mode(WIFI_STA);
+ 
   WiFi.begin(ssid, password);
 
 
