@@ -7,6 +7,8 @@
 boolean testWithoutWiFi = false; // added for quick testing without wifi
 boolean inTestMode = false;
 boolean testSend = true;
+boolean valveClosed = false;
+
 
 // const vars for valve states
 
@@ -34,11 +36,11 @@ SoftwareSerial ESP8266(11, 12); // RX, TX
 //String wifiNetwork = "MOHAESP"; // Garder les guillemets
 //String Password = "password"; // Garder les guillemets
 
-String wifiNetwork = "wolfradiolan"; // Garder les guillemets
-String Password = "12345678"; // Garder les guillemets
-
-//String wifiNetwork = "lap_hotspot"; // Garder les guillemets
+//String wifiNetwork = "wolfradiolan"; // Garder les guillemets
 //String Password = "12345678"; // Garder les guillemets
+
+String wifiNetwork = "lap_hotspot"; // Garder les guillemets
+String Password = "12345678"; // Garder les guillemets
 
 boolean valveMoving = false;
 
@@ -107,7 +109,6 @@ void setup()
   lcd.setCursor(0, 1);
   lcd.print("      DONE      ");
   small_stepper.setSpeed(600);  
-  
  
 }
 
@@ -115,7 +116,7 @@ void setup()
  // function  to setup wifi system
 void setupWiFi()
 {
-Serial.println("wifi setup");
+  Serial.println("wifi setup");
   setColor(0, 0, 255); // turns on blue LED to indicate initialisation of system. 
   
   if (!testWithoutWiFi) { // added so quick testing can take place......
@@ -197,7 +198,7 @@ if (firstLoop) { // auto close when first booted up or there is emergency
 
       if (testSend)
       {
-        SendDataTest("Test");
+        SendDataStart("Test");
         testSend = false;
       }
       else
@@ -315,6 +316,8 @@ if(inTestMode) {// open and close Test
        boolean outputResults =  testValve();
      //  ConnectToWebsite();  // Connect to the website
      //  SendData("" + outputResults);  // Send data
+
+      SendDataTest("Test");
       }     
       if(pinNumber == 5) {// system reset 
       software_Reset();
@@ -407,45 +410,71 @@ String site = "vbi";
 
 void SendData(String data)
 {
-  data = "will=test"; // FOR DEBUG
+ // data = "will=test"; // FOR DEBUG
 
-  httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/openvalve.php" ); 
+ // httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/openvalve.php" ); 
+}
+
+
+String isLiquidInChamber()
+{
+  if (valveClosed)
+  {
+   return "Full"; 
+  }  
+  else
+  {
+     return "Empty"; 
+  }
+}
+
+void SendDataStart(String data)
+{
+
+  data = "id=" + id + "&vsta=" + "START&csta=" + isLiquidInChamber();
+
+  
+  httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/startvalve.php" ); 
 }
 
 void SendDataTest(String data)
 {
   data = "will=test"; // FOR DEBUG
-  httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/startvalve.php" ); 
+  httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/starttest2.php" ); 
 }
-
-
 
 // sends http post
 
 void httppost (String data, String server, String uri) { 
 
-
 String dataL;
 dataL = data.length();
-
+Serial.println(data);
+Serial.println("Length test");
+Serial.println(dataL);
   
 ESP8266.println("AT+CIPSTART=1,\"TCP\",\"" + server + "\",80");//start a TCP connection. 
 if(ESP8266.find("OK")) { 
 Serial.println("TCP connection ready");
-} delay(1000); 
+} delay(2000);
+
+ 
 String postRequest =
 "POST " + uri + " HTTP/1.0\r\n" + 
 "Host: " + server + "\r\n" + 
 "Accept: *" + "/" + "*\r\n" + 
 "Content-Length: " + dataL + "\r\n" + 
 "Content-Type: application/x-www-form-urlencoded\r\n" + 
-"\r\n" + data; 
+"\r\n" + data;
 
 
 
+Serial.println(postRequest);
 String repL; 
-
 repL = postRequest.length();
+Serial.println(postRequest);
+Serial.println("Length test Request 1");
+Serial.println(repL);
 
 
 String sendCmd = "AT+CIPSEND=1,";//determine the number of caracters to be sent.
@@ -599,6 +628,8 @@ void openValve(){
   }  
   
   setColor(0, 255, 0); // Turn the Led Green
+
+   valveClosed = false;
 }
 
 // Function to close the valve
@@ -608,6 +639,8 @@ void closeValve(){
     if(!loopSteps(STEPS_PER_OUTPUT_REVOLUTION, false)){break;} // runs funtion to move stepper motor step bu step so that limit switch can be used - saves over run
   } 
   setColor(255, 0, 0); // Led turn red
+
+  valveClosed = true;
 }
 
 
