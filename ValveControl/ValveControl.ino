@@ -417,7 +417,7 @@ void sendDataToWebsite(String dataSent, String chamberStatus, String fault, Stri
 {
   String data = "id=" + valveID + "&v=" + dataSent + "&c=" + chamberStatus + "&f=" + fault + "&e=" + emer ;  
   Serial.println(data);
-  httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/startvalve.php" ); 
+  httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/valve_con.php" ); 
 }
 
 // sends a post request so that data can be sent to PHP Script then to website
