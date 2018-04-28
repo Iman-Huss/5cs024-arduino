@@ -1,12 +1,10 @@
 #include <SoftwareSerial.h>
 #include <Stepper.h>
-#include <LiquidCrystal.h>
+//#include <LiquidCrystal.h>
 
 #define DEBUG true
 
-boolean testWithoutWiFi = false; // added for quick testing without wifi
 boolean inTestMode = false;
-boolean testSend = true;
 boolean valveClosed = false;
 
 
@@ -17,16 +15,16 @@ int const STATE_VALVE_CLOSED = 2000;
 int const STATE_VALVE_HALF = -1000;
 
 boolean wiFiSetDone = false;
-unsigned long timeTestStart;
+//unsigned long timeTestStart;
 
 int currentValveState = STATE_VALVE_HALF;
 
 int flashEveryAmount = 50;
 int ledState = 0;
+String valveID = "1837";
 
 //---( Number of steps per revolution of INTERNAL motor in 4-step mode ) NOT USED
 #define STEPS_PER_MOTOR_REVOLUTION 32
-int speed = 950;
 //---( Steps per OUTPUT SHAFT of gear reduction )---
 #define STEPS_PER_OUTPUT_REVOLUTION -2 * 64  //2048 
 
@@ -42,12 +40,10 @@ SoftwareSerial ESP8266(11, 12); // RX, TX
 String wifiNetwork = "lap_hotspot"; // Garder les guillemets
 String Password = "12345678"; // Garder les guillemets
 
-boolean valveMoving = false;
 
-boolean startup = true; 
 boolean firstLoop = true;
 
-//#define COMMON_ANODE
+
 
 int redPin = 6;
 int greenPin = 10; // pin 10 swapped with pin 13 ( SoftwareSerial ) becasuse pin 13 was not PWM 
@@ -63,13 +59,9 @@ int liquidSesnorPin = 13;
 // Initialize Stepper Motor
 Stepper small_stepper(STEPS_PER_MOTOR_REVOLUTION, 2, 3, 4, 5);
 
-int  Steps2Take;
-
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
-LiquidCrystal lcd(A0, A1, A5, A4, A3, A2);
-
-int delayTime2 = 350; // Delay between shifts (used by Scroll function)
+//LiquidCrystal lcd(A0, A1, A5, A4, A3, A2);
 
 
 /****************************************************************/
@@ -86,9 +78,9 @@ void setup()
   pinMode(A5, OUTPUT);
 
   // set up the LCD's number of columns and rows:
-  lcd.begin(16, 2);
+//  lcd.begin(16, 2);
   // Print a message to the LCD.
-  lcd.print(" INITIALISATION ");
+  //lcd.print(" INITIALISATION ");
 
   pinMode(bluePin,OUTPUT);  
   pinMode(greenPin,OUTPUT);
@@ -105,11 +97,12 @@ void setup()
 
   
   // Display info on LCD
-  lcd.print(" INITIALISATION ");
-  lcd.setCursor(0, 1);
-  lcd.print("      DONE      ");
+//  lcd.print(" INITIALISATION ");
+ // lcd.setCursor(0, 1);
+  //lcd.print("      DONE      ");
+  
   small_stepper.setSpeed(600);  
- 
+
 }
 
 
@@ -119,7 +112,7 @@ void setupWiFi()
   Serial.println("wifi setup");
   setColor(0, 0, 255); // turns on blue LED to indicate initialisation of system. 
   
-  if (!testWithoutWiFi) { // added so quick testing can take place......
+  if (!inTestMode) { // added so quick testing can take place......
   ESP8266.begin(115200);
   sendToESP8266("AT+CIOBAUD=9600");
   receiveFromESP8266(4000);
@@ -138,7 +131,6 @@ void setupWiFi()
   setColor(0, 0, 0);
   delay(150); 
   //---------------------------------------------------
-
    setColor(255, 0, 0); // sets the led to red
 }
 
@@ -154,10 +146,9 @@ if (firstLoop) { // auto close when first booted up or there is emergency
 
 //----------------- POSSIBLE BUG BELOW WILL NEED TO BE CHANGED TO ACCOUNT FOR NORMAL LIQUID FLOW IN FINAL VERSION --------------------- 
 
-  if (liquidSesnorPin==HIGH) // checks to see if float switch is triggered - ie there is liquid in the chamber
+  if (liquidSesnorPin==LOW) // checks to see if float switch is triggered - ie there is liquid in the chamber
     {
-    //  currentValveState = STATE_VALVE_CLOSED; // by pass untill sensor fitted
-    //  SendData("full"); // sends message to website saying that the chamber is full 
+    
     }
 //------------------------------------------------  BUG ABOVE -------------------------------------------------------------
 
@@ -184,7 +175,7 @@ if (firstLoop) { // auto close when first booted up or there is emergency
         case STATE_VALVE_HALF: {
         Serial.println("Closing Valve");
         closeValve(); // closes valve
-        SendData("CLOSED"); // sents message to website saying that the valve is closed 
+       
         break;
        }
       }
@@ -193,18 +184,17 @@ if (firstLoop) { // auto close when first booted up or there is emergency
   if (!wiFiSetDone) {
       setupWiFi();  
       wiFiSetDone = true;
+      sendDataToWebsite("START","NA","NO","NO");  
+      testValve();
+
+      
+      
   }
   else {
 
-      if (testSend)
-      {
-        SendDataStart("Test");
-        testSend = false;
-      }
-      else
-      {
+     
       mainLoop(); // runs the main loop
-      }
+      
   }
 } 
 }
@@ -218,10 +208,10 @@ asm volatile ("  jmp 0"); // software reset
 void mainLoop()
 {
 
-  
-  
  if(digitalRead(liquidSesnorPin)==HIGH) {
  
+
+  /*
   lcd.setCursor(0, 0);
   lcd.print(" LIQUID ALERT! ");
 //  SendData("LIQUID");
@@ -242,6 +232,8 @@ void mainLoop()
  // lcd.setCursor(0, 1);
  // lcd.print("\177 \177 \177 \177 \177 \177 \177 \177 "); // Shift the arrows
  // delay(300);
+
+ */
  }
 
 if(inTestMode) {// open and close Test
@@ -276,8 +268,8 @@ if(inTestMode) {// open and close Test
       if(pinNumber == 1) {
       
         setColor(255, 255, 50); // Turn the Led Amber
-        valveMoving = true;
-
+//        valveMoving = true;
+/*
         // Display info on LCD
         lcd.clear();
         lcd.setCursor(0, 0);
@@ -287,15 +279,17 @@ if(inTestMode) {// open and close Test
         openValve();  // Open Valve
         // Display info on LCD
         lcd.print("Valve Open!  ");
-        SendData("OPEN");
+//        SendData("OPEN");
+  */
+    
       }
 
       // If order 2 received: Close the valve
       if(pinNumber == 2) {
         setColor(255, 255, 50); // Turn the Led Amber
-        valveMoving = true;
+//        valveMoving = true;
         // Display info on LCD
-        lcd.clear();
+/*        lcd.clear();
         lcd.setCursor(0, 0);
         lcd.print("No Contamination");
         lcd.setCursor(0, 1);
@@ -303,32 +297,36 @@ if(inTestMode) {// open and close Test
         closeValve(); // Close Valve
         // Display info on LCD
         lcd.print("Valve closed!");
-        SendData("CLOSED");
+// 
+/*/
+     
       }     
 
       // If order 3 received: send data to the server used for testing data
       if(pinNumber == 3) {      
-//        ConnectToWebsite();  // Connect to the website
-        SendData("Hello");  // Send data
+         sendDataToWebsite("123","NA","NO","NO");
       }  
 
       if(pinNumber == 4) {// valve test 
-       boolean outputResults =  testValve();
-     //  ConnectToWebsite();  // Connect to the website
-     //  SendData("" + outputResults);  // Send data
-
-      SendDataTest("Test");
+     
+       testValve();
+     
       }     
       if(pinNumber == 5) {// system reset 
+      sendDataToWebsite("RESET","NA","NO","NO");
       software_Reset();
+     
       }     
     }
   }   
 }
 
-boolean testValve()
+String testValve()
 {
-  timeTestStart = millis();
+ sendDataToWebsite("TEST_S","NA","TEST","NO"); 
+     
+  
+//  timeTestStart = millis();
   setColor(255, 0, 0);  // red
   delay(500);
   setColor(0, 255, 0);  // green
@@ -338,7 +336,10 @@ boolean testValve()
   openValve();
   delay(2000);
   closeValve();
-  return false; // code to be added here to test valve.
+
+
+  sendDataToWebsite("PASS","NA","NO","NO");
+ 
 }
 
 
@@ -354,11 +355,12 @@ void InitESP8266()
   Serial.println("***********************************************************");
 
   // Display info on LCD
+/*
   lcd.setCursor(0, 0);
   lcd.print("   CONNECTING   ");
   lcd.setCursor(0, 1);
   lcd.print("      WIFI      ");
-
+*/
 
   sendToESP8266("AT+CWJAP=\""+ wifiNetwork + "\",\"" + Password +"\""); //connect to wifi network
   receiveFromESP8266(15000);
@@ -379,86 +381,81 @@ void InitESP8266()
   Serial.println("******************* INITIALISATION DONE *******************");
 }
 
+
+
 // function to display output to LCD not used Yet
 void sendLCD(String message, int line)
 {
-  if (line==0) {
+/*  if (line==0) {
      lcd.setCursor(0, 0);
      lcd.print(message);
   }
   else {
      lcd.setCursor(0, 1);
      lcd.print(message);
-  }
+  } */
 }
 
 /* Function to connect to the uni server */
-void ConnectToWebsite1()
-{
-  Serial.println(".................. CONNECTION TO SERVER ....................");
-  sendToESP8266("AT+CIPSTART=1,\"TCP\",\"mi-linux.wlv.ac.uk\",80"); //connect to website
-  receiveFromESP8266(10000);
-
-  Serial.println("***************** CONNECTION TO SERVER: OK ****************");
-}
 
 
-String id = "1837";
-String zone = "c";
-String site = "vbi";
 
 
-void SendData(String data)
-{
- // data = "will=test"; // FOR DEBUG
 
- // httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/openvalve.php" ); 
-}
-
-
+// checks sensor readings
 String isLiquidInChamber()
 {
-  if (valveClosed)
-  {
+  if (valveClosed){
    return "Full"; 
   }  
-  else
-  {
+  else {
      return "Empty"; 
   }
 }
 
-void SendDataStart(String data)
+void sendDataToWebsite(String dataSent, String chamberStatus, String fault, String emer)
 {
-
-  data = "id=" + id + "&vsta=" + "START&csta=" + isLiquidInChamber();
-
-  
+  String data = "id=" + valveID + "&v=" + dataSent + "&c=" + chamberStatus + "&f=" + fault + "&e=" + emer ;  
+  Serial.println(data);
   httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/startvalve.php" ); 
 }
 
-void SendDataTest(String data)
-{
-  data = "will=test"; // FOR DEBUG
-  httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/starttest2.php" ); 
-}
-
-// sends http post
+// sends a post request so that data can be sent to PHP Script then to website
 
 void httppost (String data, String server, String uri) { 
 
 String dataL;
 dataL = data.length();
-Serial.println(data);
-Serial.println("Length test");
-Serial.println(dataL);
+
+
+// -------------------------------------------  website connection code ------------------------------------------
   
 ESP8266.println("AT+CIPSTART=1,\"TCP\",\"" + server + "\",80");//start a TCP connection. 
-if(ESP8266.find("OK")) { 
-Serial.println("TCP connection ready");
-} delay(2000);
+int i = 0;
+for(i=0;i<10;i++) {   /// trys to connect 10 times to the TCP if not it will try and connect to setup wifi again
+   if(ESP8266.find("OK")) { 
+      Serial.println("TCP connection ready");
+      delay(100);
+      break;
+   }
+   Serial.println("Connecting error trying again!");
+}
+if(i==9) {
+    setupWiFi(); // if not connected it will try to connect to wifi again
+    for(i=0;i<10;i++) {
+      if(ESP8266.find("OK")) { 
+      Serial.println("TCP connection ready");
+      delay(100);
+      break;
+    }
+    Serial.println("Connecting error trying again!");
+  }
+}
 
- 
+delay(2000);
+
+
+ // post request string 
 String postRequest =
 "POST " + uri + " HTTP/1.0\r\n" + 
 "Host: " + server + "\r\n" + 
@@ -467,25 +464,18 @@ String postRequest =
 "Content-Type: application/x-www-form-urlencoded\r\n" + 
 "\r\n" + data;
 
-
-
-Serial.println(postRequest);
 String repL; 
 repL = postRequest.length();
 Serial.println(postRequest);
-Serial.println("Length test Request 1");
-Serial.println(repL);
-
 
 String sendCmd = "AT+CIPSEND=1,";//determine the number of caracters to be sent.
 ESP8266.print(sendCmd); 
-ESP8266.println(repL); 
+ESP8266.println(repL); // sends the size of data
  
 receiveFromESP8266(5000);
-//if(ESP8266.find(">")) { Serial.println("Sending..");
-ESP8266.println(postRequest); 
- receiveFromESP8266(5000);
-//}}
+ESP8266.println(postRequest);  // posts the request
+receiveFromESP8266(5000);
+
 }
 
 /* Function that send commands to the ESP8266 */
@@ -512,7 +502,11 @@ void receiveFromESP8266(const int timeout, boolean LCD)
       reponse+=c;
     }
   }
-  
+  if(!LCD) {
+  Serial.print(reponse);  
+  } 
+
+  /*
   if(!LCD) {
   Serial.print(reponse);  
   } 
@@ -524,7 +518,7 @@ void receiveFromESP8266(const int timeout, boolean LCD)
   lcd.setCursor(0, 1);
   
   lcd.print(ipNumber);
-  }
+  }*/
 }
 
 
@@ -628,8 +622,8 @@ void openValve(){
   }  
   
   setColor(0, 255, 0); // Turn the Led Green
-
-   valveClosed = false;
+  valveClosed = false;
+   sendDataToWebsite("OPEN","NA","NO","NO");
 }
 
 // Function to close the valve
@@ -641,6 +635,7 @@ void closeValve(){
   setColor(255, 0, 0); // Led turn red
 
   valveClosed = true;
+   sendDataToWebsite("CLOSED","NA","NO","NO");
 }
 
 
@@ -658,6 +653,8 @@ void setColor(int red, int green, int blue)
   analogWrite(bluePin, blue);  
 }
 
+
+/*
 // Function to scroll text on LCD (ex. of use: scrollInFromRight(1, "Line2 From Right");
 void scrollInFromRight (int line, char str1[]) {
 
@@ -672,12 +669,10 @@ void scrollInFromRight (int line, char str1[]) {
 
     lcd.setCursor(j, line);
     lcd.print(str1);
-    delay(delayTime2);
+    delay(350);
   }
 }
-
-
-
+*/
 // function to check open and closed sensors to get current state of valve (Open or Closed)
 int checkValveState()
 {
