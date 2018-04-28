@@ -6,7 +6,7 @@
 
 boolean inTestMode = false;
 boolean valveClosed = false;
-
+boolean valveError = false;
 
 // const vars for valve states
 
@@ -22,6 +22,7 @@ int currentValveState = STATE_VALVE_HALF;
 int flashEveryAmount = 50;
 int ledState = 0;
 String valveID = "1837";
+ String ipNumber;
 
 //---( Number of steps per revolution of INTERNAL motor in 4-step mode ) NOT USED
 #define STEPS_PER_MOTOR_REVOLUTION 32
@@ -146,7 +147,7 @@ if (firstLoop) { // auto close when first booted up or there is emergency
 
 //----------------- POSSIBLE BUG BELOW WILL NEED TO BE CHANGED TO ACCOUNT FOR NORMAL LIQUID FLOW IN FINAL VERSION --------------------- 
 
-  if (liquidSesnorPin==LOW) // checks to see if float switch is triggered - ie there is liquid in the chamber
+  if (digitalRead(liquidSesnorPin)==HIGH) // checks to see if float switch is triggered - ie there is liquid in the chamber
     {
     
     }
@@ -184,11 +185,9 @@ if (firstLoop) { // auto close when first booted up or there is emergency
   if (!wiFiSetDone) {
       setupWiFi();  
       wiFiSetDone = true;
-      sendDataToWebsite("START","NA","NO","NO");  
+     // sendDataToWebsite(ipNumber,"NA","NO","NO");  
+       sendDataToWebsite("START","NA","NO","NO");  
       testValve();
-
-      
-      
   }
   else {
 
@@ -268,7 +267,7 @@ if(inTestMode) {// open and close Test
       if(pinNumber == 1) {
       
         setColor(255, 255, 50); // Turn the Led Amber
-//        valveMoving = true;
+//      valveMoving = true;
 /*
         // Display info on LCD
         lcd.clear();
@@ -287,7 +286,7 @@ if(inTestMode) {// open and close Test
       // If order 2 received: Close the valve
       if(pinNumber == 2) {
         setColor(255, 255, 50); // Turn the Led Amber
-//        valveMoving = true;
+//       valveMoving = true;
         // Display info on LCD
 /*        lcd.clear();
         lcd.setCursor(0, 0);
@@ -315,8 +314,13 @@ if(inTestMode) {// open and close Test
       if(pinNumber == 5) {// system reset 
       sendDataToWebsite("RESET","NA","NO","NO");
       software_Reset();
-     
-      }     
+      }
+
+      if(pinNumber == 6) {// system reset 
+       valveError = false;
+      }
+
+           
     }
   }   
 }
@@ -324,8 +328,6 @@ if(inTestMode) {// open and close Test
 String testValve()
 {
  sendDataToWebsite("TEST_S","NA","TEST","NO"); 
-     
-  
 //  timeTestStart = millis();
   setColor(255, 0, 0);  // red
   delay(500);
@@ -337,8 +339,12 @@ String testValve()
   delay(2000);
   closeValve();
 
-
+ if(!valveError) {
   sendDataToWebsite("PASS","NA","NO","NO");
+ }
+ else {
+   sendDataToWebsite("FAIL","NA","YES","NO");
+ }
  
 }
 
@@ -369,6 +375,8 @@ void InitESP8266()
   sendToESP8266("AT+CIFSR"); //Display the IPs adress (client + server)
   
   receiveFromESP8266(15000,true);
+
+ 
  
   Serial.println("***********************************************************");
   sendToESP8266("AT+CIPMUX=1");  //set multiple connections 
@@ -405,7 +413,7 @@ void sendLCD(String message, int line)
 // checks sensor readings
 String isLiquidInChamber()
 {
-  if (valveClosed){
+  if (digitalRead(liquidSesnorPin)==HIGH){
    return "Full"; 
   }  
   else {
@@ -423,12 +431,11 @@ void sendDataToWebsite(String dataSent, String chamberStatus, String fault, Stri
 // sends a post request so that data can be sent to PHP Script then to website
 
 void httppost (String data, String server, String uri) { 
-
 String dataL;
 dataL = data.length();
-
-
 // -------------------------------------------  website connection code ------------------------------------------
+
+
   
 ESP8266.println("AT+CIPSTART=1,\"TCP\",\"" + server + "\",80");//start a TCP connection. 
 int i = 0;
@@ -506,19 +513,20 @@ void receiveFromESP8266(const int timeout, boolean LCD)
   Serial.print(reponse);  
   } 
 
-  /*
+  
   if(!LCD) {
   Serial.print(reponse);  
   } 
   else {
-  String ipNumber = extractIP(reponse);
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("      WIFI      ");
-  lcd.setCursor(0, 1);
+   ipNumber = extractIP(reponse);
+    Serial.println(ipNumber);  
+  ///lcd.clear();
+ // lcd.setCursor(0, 0);
+ // lcd.print("      WIFI      ");
+ // lcd.setCursor(0, 1);
   
-  lcd.print(ipNumber);
-  }*/
+//  lcd.print(ipNumber);
+  }
 }
 
 
@@ -549,9 +557,21 @@ boolean loopSteps(int numberOfSteps,boolean opening)
 {
   int flashCount = 0;
   setColor(0, 0, 0);
-       
-  for(int i  = 0;i>numberOfSteps;i++) {// loops thro steps
-    
+
+
+/// ------------------------------------------ VALVE TIMER CODE IF IT TAKES TOO LONG TO OPEN OR CLOSE SYSTEM WILL SEND AN ERROR
+
+ 
+  unsigned long startMillis = millis();     
+  for(int i  = 0;i>numberOfSteps;i++) {// loops thro steps  
+    if ((millis() - startMillis) > 16000) {
+    valveError = true;
+    sendDataToWebsite("ERROR","NA","YES","NO");
+    break;
+    }
+
+// ----------------------------------------------------------------------------------------------------------------------------
+
       if (opening) {
         
          if(digitalRead(openSensorPin)) { // checks open limit switch
@@ -616,26 +636,44 @@ boolean loopSteps(int numberOfSteps,boolean opening)
 
 // Function to open the valve
 void openValve(){
-  for (int i = 0; i<8; i++){
+  
+  if(!valveError)
+  {
+  for (int i = 0; i<8; i++){  
+    if(valveError){break;}
     setColor(0, 0, 0); // Turn Off the Led
     if(!loopSteps(STEPS_PER_OUTPUT_REVOLUTION, true)){break;} // runs funtion to move stepper motor step bu step so that limit switch can be used - saves over run
   }  
-  
+    if(!valveError)
+  {
   setColor(0, 255, 0); // Turn the Led Green
   valveClosed = false;
-   sendDataToWebsite("OPEN","NA","NO","NO");
+  sendDataToWebsite("OPEN","NA","NO","NO");
+  }
+  }
 }
 
 // Function to close the valve
 void closeValve(){
+  
+  
+  if(!valveError)
+  {
+  
   for (int i = 0; i<8; i++){
+     if(valveError){break;}
     setColor(0, 0, 0); // Turn Off the Led  
     if(!loopSteps(STEPS_PER_OUTPUT_REVOLUTION, false)){break;} // runs funtion to move stepper motor step bu step so that limit switch can be used - saves over run
   } 
+  if(!valveError) {
   setColor(255, 0, 0); // Led turn red
-
   valveClosed = true;
-   sendDataToWebsite("CLOSED","NA","NO","NO");
+
+  if(wiFiSetDone) {// open send if wifi is setup
+  sendDataToWebsite("CLOSED","NA","NO","NO");
+  }
+  
+  }}
 }
 
 
