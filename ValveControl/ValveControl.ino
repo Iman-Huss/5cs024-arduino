@@ -485,6 +485,9 @@ receiveFromESP8266(10000);
 ESP8266.println(postRequest);  // posts the request
 receiveFromESP8266(10000);
 
+
+
+ESP8266.println("AT+CIPCLOSE=0");
 }
 
 /* Function that send commands to the ESP8266 */
