@@ -22,6 +22,11 @@
 		{
 			echo "<font color='red'>";
 			break;
+		}
+                case "PASS":
+		{
+			echo "<font color='green'>";
+			break;
 		}	
 		}
 		
@@ -31,9 +36,3 @@
 		}  
 	} else echo "0 results.";
 	$conn->close();
-
-
-?>
-
-
-
