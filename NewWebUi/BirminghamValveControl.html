@@ -35,7 +35,21 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <script>
+   
+
+<script language="javascript" type="text/javascript">
+$(document).ready(function(){    
+    loadupdate();
+});
+
+function loadupdate(){
+    $("#valve_data").load("livefeed.php");
+    setTimeout(loadupdate, 1000);
+}
+</script>
+
+
+ <script>
                 
             $(document).ready(function(){
                 $("#valOn").click(function(){
@@ -352,6 +366,8 @@
                                     </div>
                                 </div>
                             </div>
+
+
                     <div class="col-lg-4">
                         <div class="panel panel-default">
                             <div class="panel-heading">
@@ -370,16 +386,18 @@
                                     </SELECT>
                                     </div>
                                     <br>
-                                    <div style="vertical-align: middle;margin:auto; width:50%">
-											<form action="openvalve.php" method="POST" target="_blank">
+                                  
+
+  <div style="vertical-align: middle;margin:auto; width:50%">
+											
                                             <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
-											</form>
+											
                                     </div>
                                             <br>
                                     <div style="vertical-align: middle;margin:auto; width:50%">
-											<form action="closevalve.php" method="POST" target="_blank">
+											
                                             <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
-											</form>
+											
                                     </div>
                                     <br>
                                     <div style="vertical-align: middle;margin:auto; width:50%">
@@ -412,6 +430,28 @@
 
                 </div>
                 <!-- /.row -->
+
+
+               <div class="col-lg-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Live Valve Status</h3>
+                            </div>
+                           
+
+			 <div class="panel-body">
+                                   <div style="vertical-align: middle;margin:auto; width:50%"> 
+                               
+                                  <div id="valve_data"></div>
+  
+    
+     </div>
+                            </div>
+                        </div>
+                </div>
+
+
+
 
             </div>
             <!-- /.container-fluid -->
