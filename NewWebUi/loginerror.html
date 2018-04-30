@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Valve Control | Log in</title>
+	<title>Valve Control | Error</title>
 	<meta name="author" content="Abdurrahman Dafiri">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -39,19 +39,16 @@
 </head>
 <body>
 <div class="login-form">
-    <form method="POST" action="login.php" target="_self">
-        <h2 class="text-center">Log in</h2>       
+    <form>
+        <h2 class="text-center">Sorry! There was an error.</h2>   
+		<h5 class="text-center">The username and password may have been incorrect. What would you like to do?</h5>
         <div class="form-group">
-            <input type="text" name="user" class="form-control" placeholder="Username" required="required">
+            <p class="text-center"><a href="index.html">Try Again</a></p>
         </div>
         <div class="form-group">
-            <input type="password" name="pass" class="form-control" placeholder="Password" required="required">
-        </div>
-        <div class="form-group"> 
-            <input type="submit" class="btn btn-primary btn-block" value="Log in">
+            <p class="text-center"><a href="register.html">Create an Account</a></p>
         </div>       
     </form>
-    <p class="text-center"><a href="register.html">Create an Account</a></p>
 </div>
 </body>
 </html>                                		                            
