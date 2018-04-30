@@ -2,7 +2,8 @@
 #include <Stepper.h>
 //#include <LiquidCrystal.h>
 
-#define DEBUG true
+//#define DEBUG true
+
 
 boolean inTestMode = false;
 boolean valveClosed = false;
@@ -76,12 +77,11 @@ void setup()
   pinMode(closeSensorPin,INPUT);
   pinMode(liquidSesnorPin,INPUT);
   
- 
 
   // Initialise the serial com
-  Serial.begin(9600);  
+ // Serial.begin(9600);  
 
-  
+ 
   // Display info on LCD
 //  lcd.print(" INITIALISATION ");
  // lcd.setCursor(0, 1);
@@ -89,8 +89,9 @@ void setup()
   
   small_stepper.setSpeed(600);  
 
-}
+//createRequestString("test","mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/valve_con.php");
 
+}
 
  // function  to setup wifi system
 void setupWiFi()
@@ -99,12 +100,12 @@ void setupWiFi()
   setColor(0, 0, 255); // turns on blue LED to indicate initialisation of system. 
   
   if (!inTestMode) { // added so quick testing can take place......
-  ESP8266.begin(115200);
-  sendToESP8266("AT+CIOBAUD=9600");
-  receiveFromESP8266(5000);
-  ESP8266.begin(9600);  
-  InitESP8266();
-  wiFiSetDone = true;
+   ESP8266.begin(115200);
+   sendToESP8266("AT+CIOBAUD=9600");
+   receiveFromESP8266(5000);
+   ESP8266.begin(9600);  
+   connectWifi();
+   wiFiSetDone = true;
 //  Serial.println(" ------------------------ Wifi setup done --------------------------");
   }
    // indicates system ready for internet connection
@@ -119,22 +120,17 @@ void setupWiFi()
   setColor(0, 0, 0);
   delay(150); 
   //---------------------------------------------------
-   setColor(255, 0, 0); // sets the led to red
-
-   
+   setColor(255, 0, 0); // sets the led to red   
 }
 
 void loop()
 {
-
-if (firstLoop) { // auto close when first booted up or there is emergency
+  if (firstLoop) { // auto close when first booted up or there is emergency
   closeValve(); 
   firstLoop = false;
   if(!valveError) {
-  
   currentValveState = STATE_VALVE_CLOSED;
-
-  sendDataToWebsite("START","NA","NO","NO");   
+  sendDataToWebsite("START","NA","NO","NO");  
   }     
 }
 
@@ -177,8 +173,7 @@ if (firstLoop) { // auto close when first booted up or there is emergency
       }
  }
  else {
- 
-     
+
       mainLoop(); // runs the main loop
       
 } 
@@ -192,9 +187,7 @@ if (firstLoop) { // auto close when first booted up or there is emergency
 
 void mainLoop()
 {
-
  if(digitalRead(liquidSesnorPin)==HIGH) {
- 
 
   /*
   lcd.setCursor(0, 0);
@@ -243,15 +236,15 @@ if(inTestMode) {// open and close Test
       // get the connection id so that we can then disconnect
       int connectionId = ESP8266.read()-48; // subtract 48 because the read() function returns the ASCII decimal value
             
-      ESP8266.find("pin="); // advance cursor to "pin="
+       ESP8266.find("pin="); // advance cursor to "pin="
     //  Serial.println("new client"); // Display info serial console
-      int pinNumber = (ESP8266.read()-48); // get first number
+       int pinNumber = (ESP8266.read()-48); // get first number
     //  Serial.print("new pinNumber : "); // Display info serial console
   //    Serial.println(pinNumber, DEC);
 
       // If order 1 received: Open the valve
       if(pinNumber == 1) {
-      
+        valveError = false;
       //  setColor(255, 255, 50); // Turn the Led Amber
         openValve();
 //      valveMoving = true;
@@ -272,6 +265,7 @@ if(inTestMode) {// open and close Test
 
       // If order 2 received: Close the valve
       if(pinNumber == 2) {
+        valveError = false;
         //setColor(255, 255, 50); // Turn the Led Amber
         closeValve();
 //       valveMoving = true;
@@ -342,9 +336,8 @@ String testValve()
  
 }
 
-
 /* Function to initialise the ESP8266 */
-void InitESP8266()
+void connectWifi() 
 {  
 
   //String wifiNetwork = "MOHAESP"; // Garder les guillemets
@@ -365,6 +358,9 @@ const String Password = "12345678"; // Garder les guillemets
   sendToESP8266("AT+CWMODE=3"); //Wifi mode - softAP + station mode
   receiveFromESP8266(2000);
   //Serial.println("***********************************************************");
+
+ ESP8266.println("AT+CIPSTO=7200");
+ receiveFromESP8266(1000);
 //
   // Display info on LCD
 /*
@@ -420,74 +416,123 @@ String isLiquidInChamber()
   }
 }
 
+// sends a post request so that data can be sent to PHP Script then to website
 void sendDataToWebsite(String dataSent, String chamberStatus, String fault, String emer)
 {
   String data = "id=" + valveID + "&v=" + dataSent + "&c=" + chamberStatus + "&f=" + fault + "&e=" + emer ;  
   httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/valve_con.php" ); 
 }
 
-// sends a post request so that data can be sent to PHP Script then to website
 
-void httppost (String data, String server, String uri) { 
-String dataL;
-dataL = data.length();
-// -------------------------------------------  website connection code ------------------------------------------
-
-if(!wiFiSetDone)
+// connects to website
+void connectToWiFi(String server)
 {
- setupWiFi();
-} 
-ESP8266.println("AT+CIPSTART=1,\"TCP\",\"" + server + "\",80");//start a TCP connection. 
-
-delay(5000);
-int i = 0;
-//for(i=0;i<10;i++) {   /// trys to connect 10 times to the TCP if not it will try and connect to setup wifi again
- //  if(ESP8266.find("OK")) { 
-  //    Serial.println("TCP connection ready");
-   //   delay(1000);
-    //  break;
-  // }
-  // Serial.println("Connecting error trying again!");/
-//}
-
-if(i>8) {
-    setupWiFi(); // if not connected it will try to connect to wifi again
-    for(i=0;i<10;i++) {
-      if(ESP8266.find("OK")) { 
-      Serial.println("TCP connection ready");
-      delay(500);
-      break;
-    }
-    Serial.println("Connecting error trying again!");
+if(!wiFiSetDone) {
+  setupWiFi();
+  wiFiSetDone = true;
   }
 }
-delay(2000);
 
- // post request string 
-String postRequest =
-"POST " + uri + " HTTP/1.0\r\n" + 
-"Host: " + server + "\r\n" + 
-//"Accept: *" + "/" + "*\r\n" + 
-"Content-Length: " + dataL + "\r\n" + 
-"Connection: keep-alive\r\n" +
-"Content-Type: application/x-www-form-urlencoded\r\n" + 
-"\r\n" + data;
+// gets the length of the request string.
+int createRequestL(String data, String server, String uri)
+{
+int postRequest = 
+("POST " + uri + " HTTP/1.0\r\n" +
+"Host: " + server + "\r\n" +
+"Connection: keep-alive" + "\r\n" +
+"Accept: *" + "/" + "*\r\n").length();
 
-String repL; 
-repL = postRequest.length();
-//Serial.println(postRequest);
+String dataL;
+dataL = data.length();
 
-String sendCmd = "AT+CIPSEND=1,";//determine the number of caracters to be sent.
-ESP8266.print(sendCmd); 
-ESP8266.println(repL); // sends the size of data
+int postRequest2 = ("Content-Length: " + dataL + "\r\n").length();
+int postRequest3 = ("Content-Type: application/x-www-form-urlencoded\r\n\r\n" +  data).length();
+return postRequest + postRequest2+ postRequest3;
+
+}
+
+
+// creates request string
+void createRequest(String data, String server, String uri)
+{
+String dataL;
+dataL = data.length();
+ESP8266.print("POST " + uri + " HTTP/1.0\r\n" +
+"Host: " + server + "\r\n" +
+"Connection: keep-alive" + "\r\n" +
+"Accept: *" + "/" + "*\r\n");
+delay(200);
+ESP8266.print("Content-Length: " + dataL + "\r\n");
+delay(200);
+ESP8266.print("Content-Type: application/x-www-form-urlencoded\r\n\r\n" +  data);
+}
+
+// creates http request post.
+void httppost (String data, String server, String uri) { 
+  Serial.println("HTTP_POST");  
+  boolean sent = false; 
+  connectToWiFi(server); // connect wifi
+  
+  ESP8266.println("AT+CIPSTART=1,\"TCP\",\"" + server + "\",80");//start a TCP connection.  
+  
+  if(ESP8266.find("OK")) {
+  // Serial.println("TCP connection ready");
+   ESP8266.println("AT+CIPSTO=7200");
+   receiveFromESP8266(1000);
+   sent = true;
  
-receiveFromESP8266(10000);
-ESP8266.println(postRequest);  // posts the request
-receiveFromESP8266(10000);
+   
+   //Serial.println("Data");
+   ///Serial.println(data);
 
+   int len = createRequestL(data,server,uri); // calulates the length of the request string.
 
+  // Serial.println("Len");
+  // Serial.println(len);
 
-ESP8266.println("AT+CIPCLOSE=0");
+   String sendCmd = "AT+CIPSEND=1,";//determine the number of caracters to be sent.
+   ESP8266.print(sendCmd);
+   ESP8266.println(len);
+
+   delay(1000);
+   createRequest(data,server,uri); // creates and sends the request string.
+   delay(10000);
+
+   int count = 0;
+   while(!ESP8266.find("SEND OK")) { // loops so it can be tryed a few times if not connected first time.
+       
+       delay(1000);
+       createRequest(data,server,uri); 
+       delay(10000);
+     
+       count++;
+       if(count==10) { // if tryed for 10 times stop
+           break;
+       } 
+   }
+
+if(count==10) { // if tryed 10 times
+  //Serial.println("Can Not Send");
+  sent==false;
+}
+else {
+ // Serial.println("Packet sent"); 
+}
+
+while (ESP8266.available()) { // prints out the reponse from the post method
+    String tmpResp = ESP8266.readString();
+  //  Serial.println(tmpResp);
+  }
+    // close the connection
+    ESP8266.println("AT+CIPCLOSE=1");
+ }
+
+if(sent==false) { // if not sent reset wifi and try again.
+   // Serial.println("trying again");  
+    delay(1000);
+    wiFiSetDone = false;
+    httppost(data,server,uri);
+  }
 }
 
 /* Function that send commands to the ESP8266 */
@@ -502,7 +547,7 @@ void receiveFromESP8266(const int timeout)
 receiveFromESP8266(timeout, false);
 }
 /*Function that read and display messages sent by ESP8266 (with timeout)*/
-void receiveFromESP8266(const int timeout, boolean LCD)
+String receiveFromESP8266(const int timeout, boolean LCD)
 {
   String reponse = "";
   long int time = millis();
@@ -513,6 +558,10 @@ void receiveFromESP8266(const int timeout, boolean LCD)
       reponse+=c;
     }
   }
+
+
+
+
   
   if(!LCD) {
      Serial.print(reponse);  
@@ -527,6 +576,8 @@ void receiveFromESP8266(const int timeout, boolean LCD)
   
 //  lcd.print(ipNumber);
   }
+
+  return reponse;
 }
 
 
