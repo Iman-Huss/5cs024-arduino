@@ -1,6 +1,6 @@
 #include <SoftwareSerial.h>
 #include <Stepper.h>
-//#include <LiquidCrystal.h>
+#include <LiquidCrystal.h>
 
 //#define DEBUG true
 
@@ -48,7 +48,7 @@ Stepper small_stepper(STEPS_PER_MOTOR_REVOLUTION, 2, 3, 4, 5);
 
 // initialize the library by associating any needed LCD interface pin
 // with the arduino pin number it is connected to
-//LiquidCrystal lcd(A0, A1, A5, A4, A3, A2);
+LiquidCrystal lcd(A0, A1, A5, A4, A3, A2);
 
 
 /****************************************************************/
@@ -64,8 +64,10 @@ void setup()
   pinMode(A4, OUTPUT);
   pinMode(A5, OUTPUT);
 
-  // set up the LCD's number of columns and rows:
-//  lcd.begin(16, 2);
+   lcd.clear();
+//   set up the LCD's number of columns and rows:
+   lcd.begin(16, 2);
+  
   // Print a message to the LCD.
   //lcd.print(" INITIALISATION ");
 
@@ -96,6 +98,9 @@ void setup()
  // function  to setup wifi system
 void setupWiFi()
 {
+
+  sendLCD("SETTING WIFI UP","1"); 
+  
  // Serial.println(" ------------------------ Wifi setup --------------------------");
   setColor(0, 0, 255); // turns on blue LED to indicate initialisation of system. 
   
@@ -105,6 +110,9 @@ void setupWiFi()
    receiveFromESP8266(5000);
    ESP8266.begin(9600);  
    connectWifi();
+
+
+  
    wiFiSetDone = true;
 //  Serial.println(" ------------------------ Wifi setup done --------------------------");
   }
@@ -125,11 +133,15 @@ void setupWiFi()
 
 void loop()
 {
+  
+  
   if (firstLoop) { // auto close when first booted up or there is emergency
+  sendLCD("STARTING UP....","1");
   closeValve(); 
   firstLoop = false;
   if(!valveError) {
   currentValveState = STATE_VALVE_CLOSED;
+  sendLCD("VALVE CLOSED....","0"); 
   sendDataToWebsite("START","NA","NO","NO");  
   }     
 }
@@ -187,6 +199,10 @@ void loop()
 
 void mainLoop()
 {
+
+  
+
+  
  if(digitalRead(liquidSesnorPin)==HIGH) {
 
   /*
@@ -247,20 +263,8 @@ if(inTestMode) {// open and close Test
         valveError = false;
       //  setColor(255, 255, 50); // Turn the Led Amber
         openValve();
-//      valveMoving = true;
-/*
-        // Display info on LCD
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("No Contamination!");
-        lcd.setCursor(0, 1);
-        lcd.print("Valve Opening");
-        openValve();  // Open Valve
-        // Display info on LCD
-        lcd.print("Valve Open!  ");
-//        SendData("OPEN");
-  */
-    
+
+
       }
 
       // If order 2 received: Close the valve
@@ -268,19 +272,8 @@ if(inTestMode) {// open and close Test
         valveError = false;
         //setColor(255, 255, 50); // Turn the Led Amber
         closeValve();
-//       valveMoving = true;
-        // Display info on LCD
-/*        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("No Contamination");
-        lcd.setCursor(0, 1);
-        lcd.print("Valve closing");
-       
-        // Display info on LCD
-        lcd.print("Valve closed!");
-// 
- closeValve(); // Close Valve
-/*/
+
+
      
       }     
 
@@ -390,16 +383,23 @@ const String Password = "12345678"; // Garder les guillemets
 }
 
 // function to display output to LCD not used Yet
-void sendLCD(String message, int line)
+void sendLCD(String message, String line)
 {
-/*  if (line==0) {
+   
+  if (line.equals("0")) {
+    
      lcd.setCursor(0, 0);
+     //lcd.clear();
      lcd.print(message);
   }
-  else {
+
+   if (line.equals("1")) {
+   
      lcd.setCursor(0, 1);
+     //lcd.clear();
      lcd.print(message);
-  } */
+   }
+  
 }
 
 /* Function to connect to the uni server */
@@ -567,14 +567,8 @@ String receiveFromESP8266(const int timeout, boolean LCD)
      Serial.print(reponse);  
   } 
   else {
-   ipNumber = extractIP(reponse);
- //  Serial.println(ipNumber);  
-  ///lcd.clear();
- // lcd.setCursor(0, 0);
- // lcd.print("      WIFI      ");
- // lcd.setCursor(0, 1);
-  
-//  lcd.print(ipNumber);
+  ipNumber = extractIP(reponse);
+  sendLCD(ipNumber,"1"); 
   }
 
   return reponse;
@@ -689,6 +683,8 @@ boolean loopSteps(int numberOfSteps,boolean opening)
 
 // Function to open the valve
 void openValve(){
+
+ sendLCD("OPENING VALVE....","0");
   
   if(!valveError)
   {
@@ -701,6 +697,7 @@ void openValve(){
   {
   setColor(0, 255, 0); // Turn the Led Green
   valveClosed = false;
+  sendLCD("VALVE OPEN....","0");
   sendDataToWebsite("OPEN","NA","NO","NO");
   }
   }
@@ -709,7 +706,7 @@ void openValve(){
 // Function to close the valve
 void closeValve(){
   
-  
+  sendLCD("CLOSING VALVE....","0");
   if(!valveError)
   {
   
@@ -723,6 +720,7 @@ void closeValve(){
   valveClosed = true;
 
   if(wiFiSetDone) {// open send if wifi is setup
+    sendLCD("VALVE CLOSED....","0"); 
   sendDataToWebsite("CLOSED","NA","NO","NO");
   }
   
