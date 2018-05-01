@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,33 +11,33 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
-	<style type="text/css">
-		.login-form {
-			width: 340px;
-			margin: 50px auto;
-		}
-		.login-form form {
-			margin-bottom: 15px;
-			background: #A9A9A9;
-			box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-			padding: 30px;
-		}
-		.login-form h2 {
-			margin: 0 0 15px;
-		}
-		.form-control, .btn {
-			min-height: 38px;
-			border-radius: 2px;
-		}
-		.btn {        
-			font-size: 15px;
-			font-weight: bold;
-		}
 
-		body {
-			background-color: #272727;
-		}
-	</style>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/sb-admin.css" rel="stylesheet">
+
+    <!-- Morris Charts CSS -->
+    <link href="css/plugins/morris.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	
 	<script type="text/javascript" language="javascript">
 		function register(){
 			$.ajax({
@@ -52,30 +54,102 @@
 			});
 		}
 	</script>
+
 </head>
+
 <body>
-<div class="login-form">
-    <form>
-        <h2 class="text-center">Create an Account</h2>       
-		<h5 class="text-center">Please enter your details below to create a new account.</h5>  
-		<div class="form-group">
-            <input type="text" id="firstname" class="form-control" placeholder="First Name" required="required">
+
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Valve Control</a>
+            </div>
+            <!-- Top Menu Items -->
+            <ul class="nav navbar-right top-nav">
+                <li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Offline</a>
+                    
+                </li>
+            </ul>
+
+        </nav>
+
+        <div id="page-wrapper">
+
+            <div class="container-fluid">
+
+                <!-- Page Heading -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                            Create Account
+                        </h1>
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <!-- /.row -->
+
+                    <div class="col-md-4 col-md-offset-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-user"></i>Login</h3>
+                            </div>
+                            <div class="panel-body">
+								<div class="login-form">
+									<form>
+										<h2 class="text-center">Please enter your credentials</h2>        
+										<div class="form-group">
+											<input type="text" id="firstname" class="form-control" placeholder="First Name" required="required">
+										</div>
+										<div class="form-group">
+											<input type="text" id="surname" class="form-control" placeholder="Surname" required="required">
+										</div>
+										<div class="form-group">
+											<input type="text" id="username" class="form-control" placeholder="Username" required="required">
+										</div>
+										<div class="form-group">
+											<input type="password" id="password" class="form-control" placeholder="Password" required="required">
+										</div>
+										<div class="form-group"> 
+											<input type="submit" class="btn btn-primary btn-block" value="Submit" onClick=register()>
+											<div id="output"></div>
+										</div>       
+									</form>
+									<p class="text-center"><a href="index.html">Log in</a></p>
+								</div>
+                            </div>
+                        </div>
+                    </div>
+
+            </div>
+            <!-- /.container-fluid -->
+
         </div>
-		<div class="form-group">
-            <input type="text" id="surname" class="form-control" placeholder="Surname" required="required">
-        </div>
-        <div class="form-group">
-            <input type="text" id="username" class="form-control" placeholder="Username" required="required">
-        </div>
-        <div class="form-group">
-            <input type="password" id="password" class="form-control" placeholder="Password" required="required">
-        </div>
-        <div class="form-group"> 
-            <input type="submit" class="btn btn-primary btn-block" value="Submit" onClick=register()>
-			<div id="output"></div>
-        </div>       
-    </form>
-    <p class="text-center"><a href="index.html">Log in</a></p>
-</div>
+        <!-- /#page-wrapper -->
+
+
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Morris Charts JavaScript -->
+    <script src="js/plugins/morris/raphael.min.js"></script>
+    <script src="js/plugins/morris/morris.min.js"></script>
+    <script src="js/plugins/morris/morris-data.js"></script>
+
 </body>
-</html>                                		                            
+
+</html>
