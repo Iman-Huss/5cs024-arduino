@@ -81,23 +81,8 @@ function loadupdate(){
       var zoneData = [];
       var valveData = [];  
       var arrayLength = valveData.length;   
-      
-      
-    
-      
-      function addValve() 
-      
-      {  
-          var x = document.getElementById("valveSelect");
-          var option = document.createElement("option");
-          option.text = document.getElementById("addValveTB").value;
-          x.add(option);
-          valveData.push(document.getElementById("addValveTB").value);
-          document.getElementById("demo2").innerHTML = valveData;
-          var valveArrayLength = valveData.length;  
-		  
-      }
 
+	  //Javascript, AJAX. Allows for addition of new valves to the database
 	  function storeValve()
 	  {
 		$.ajax({
@@ -110,6 +95,7 @@ function loadupdate(){
 			$("#output").html(response);
 		});
 	  }
+	  //
 	  
       function removeValve() {
           var x = document.getElementById("valveSelect");
@@ -200,12 +186,6 @@ function loadupdate(){
       }   
       
 
-      
-    
-    
-            
-      
-      
       var modal = document.getElementById("id01");
     
     // When the user clicks anywhere outside of the modal, close it
@@ -259,7 +239,7 @@ function loadupdate(){
                     </ul>
                 </li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> WillyB <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Online <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
                             <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
@@ -269,7 +249,7 @@ function loadupdate(){
                         </li>
                         <li class="divider"></li>
                         <li>
-                            <a href="index.html"><i class="fa fa-fw fa-power-off"></i> Clock Off</a>
+                            <a href="index.html"><i class="fa fa-fw fa-power-off"></i> Log Out </a>
                         </li>
                     </ul>
                 </li>
@@ -378,17 +358,19 @@ function loadupdate(){
                                 <LABEL for="valveName" ><B>Select Valve:</B></LABEL>
                                 <br>
                                     <SELECT id="valveSelect" name="valveName">
-                                      <OPTION value="a">1</OPTION>
-                                          <OPTION value="b">2</OPTION>
-                                          <OPTION value="c">3</OPTION>
-                                          <OPTION value="d">4</OPTION>
+                                          <OPTION value="a">V1</OPTION>
+                                          <OPTION value="b">V2</OPTION>
+                                          <OPTION value="c">V3</OPTION>
+                                          <OPTION value="d">V4</OPTION>
+										  <OPTION value="d">1837</OPTION>
+										  <OPTION value="d">420</OPTION>
                                       
                                     </SELECT>
                                     </div>
                                     <br>
                                   
 
-  <div style="vertical-align: middle;margin:auto; width:50%">
+											<div style="vertical-align: middle;margin:auto; width:50%">
 											
                                             <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
 											
@@ -409,20 +391,6 @@ function loadupdate(){
                                     <div style="vertical-align: middle;margin:auto; width:50%">
                                             <BUTTON id="valReset" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">RESET VALVE</BUTTON>
                                     </div>
-
-
-    
-                                          <!--/
-                                        <LABEL for="choiceValve"><B>Valve:</B></LABEL>
-                                    
-                                            <SELECT id="choiceValve" name="choiceValveName">
-                                            <OPTION value="a">1</OPTION>
-                                            <OPTION value="b">2</OPTION>
-                                            <OPTION value="c">3</OPTION>
-                                            <OPTION value="d">4</OPTION>
-                                    </SELECT>
-                                        -->
-    
     
                             </div>
                         </div>
