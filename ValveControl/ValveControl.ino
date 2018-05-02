@@ -3,7 +3,7 @@
 #include <SoftwareSerial.h>
 #include <Stepper.h>
 #include <LiquidCrystal.h>
-
+#include <avr/pgmspace.h> // import memory
 
 boolean inTestMode = false;
 boolean valveClosed = false;
@@ -85,18 +85,18 @@ void setup()
 
   small_stepper.setSpeed(600); // sets speed of motor  
   
-  sendLCD("STARTING UP....","1");
+  sendLCD(F("STARTING UP...."),"1");
   closeValve(); // closes valve
   setupWiFi(); // setup wifi
   currentValveState = STATE_VALVE_CLOSED; // set state to closed
-  sendLCD("VALVE CLOSED....","0"); 
-  sendDataToWebsite("START","YES","NO","NO");   // send message to website saying its closed        
+  sendLCD(F("VALVE CLOSED...."),"0"); 
+  sendDataToWebsite(F("START"),"YES","NO","NO");   // send message to website saying its closed        
 }
 
  // function  to setup wifi system
 void setupWiFi()
 {
-  sendLCD("SETTING WIFI UP","1"); 
+  sendLCD(F("SETTING WIFI UP"),"1"); 
 
   setColor(0, 0, 255); // turns on blue LED to indicate initialisation of system. 
   
@@ -128,31 +128,9 @@ void loop()
   // ------------------------------- Startup check gets the state of the valve ------------------------------ //
        
 
-  if (currentValveState==STATE_VALVE_HALF) { // on first loop the current valve state will not be open or closed
-      int currentState = checkValveState(); // gets the current state of valve  
-
-      switch(currentState) {
-          case STATE_VALVE_OPEN: {       
-          currentValveState = STATE_VALVE_OPEN;
-          setColor(0, 255, 0); // sets led to green
-          break;
-          }
-         case STATE_VALVE_CLOSED: {
-         currentValveState = STATE_VALVE_CLOSED;
-         setColor(255, 0, 0); // sets the led to red
-         break;
-         }
-        case STATE_VALVE_HALF: {
-      //  Serial.println("Closing Valve");
-        closeValve(); // closes valve
-       
-        break;
-       }
-      }
- }
- else {
-      mainLoop(); // runs the main loop     
- } 
+ 
+mainLoop(); // runs the main loop     
+ 
 }
 
 void mainLoop()
@@ -162,11 +140,11 @@ if(digitalRead(liquidSesnorPin)==HIGH) { // checks to see if liquid in chamber
   }
   else {
       if(liquidTrigger) {
-
-      if(!testMode) {
-          sendDataToWebsite("CLOSED","NO","NO","NO");   // send message to website saying its closed no liquid
+          if(!testMode) {
+               if(!valveClosed) {  
+                  sendDataToWebsite(F("CLOSED"),"NO","NO","NO");   // send message to website saying its closed no liquid
+               } 
           }
-      
       liquidTrigger = false;
       }
   }
@@ -211,19 +189,14 @@ if(inTestMode) {// open and close Test
 
       // If order 3 received: send data to the server used for testing data
       if(pinNumber == 3) {      
-         sendDataToWebsite("123","NA","NO","NO");
+      //   sendDataToWebsite("123","NA","NO","NO");
       }  
 
       if(pinNumber == 4) {// valve test 
        testValve();
       }     
       if(pinNumber == 5) {// system reset 
-      valveError = false;
-      closeValve();
-      
-      if(!valveError) {
-     // sendDataToWebsite("RESET","NA","NO","NO");
-      }
+      software_Reset();
       }
 
       if(pinNumber == 6) {// system reset 
@@ -275,13 +248,13 @@ void connectWifi()
   //String wifiNetwork = "MOHAESP"; // Garder les guillemets
   //String Password = "password"; // Garder les guillemets
 
-  //String wifiNetwork = "wolfradiolan"; // Garder les guillemets
-  //String Password = "12345678"; // Garder les guillemets
+  String wifiNetwork = "wolfradiolan"; // Garder les guillemets
+  String Password = "12345678"; // Garder les guillemets
 
-  const String wifiNetwork = "lap_hotspot"; // Garder les guillemets
-  const String Password = "12345678"; // Garder les guillemets
+  //const String wifiNetwork = "lap_hotspot"; // Garder les guillemets
+  //const String Password = "12345678"; // Garder les guillemets
   
-  
+ 
   sendToESP8266("AT");
   receiveFromESP8266(100);
   sendToESP8266("AT+CWMODE=3"); //Wifi mode - softAP + station mode
@@ -290,10 +263,10 @@ void connectWifi()
   receiveFromESP8266(100);
 
   sendToESP8266("AT+CWJAP=\""+ wifiNetwork + "\",\"" + Password +"\""); //connect to wifi network
-  receiveFromESP8266(14000);
+  receiveFromESP8266(16000);
 
   sendToESP8266("AT+CIFSR"); //Display the IPs adress (client + server)
-  receiveFromESP8266(4000,true);
+  receiveFromESP8266(5000,true);
   sendToESP8266("AT+CIPMUX=1");  //set multiple connections 
   receiveFromESP8266(100);
   
@@ -303,6 +276,13 @@ void connectWifi()
   receiveFromESP8266(100);
 
 }
+
+
+void software_Reset() // Restarts program via software can be used to reset from website
+{
+asm volatile ("  jmp 0");  
+}  
+
 
 // function to display output to LCD not used Yet
 void sendLCD(String message, String line)
@@ -324,6 +304,9 @@ void sendLCD(String message, String line)
   
 }
 
+
+
+
 /* Function to connect to the uni server */
 
 
@@ -344,7 +327,7 @@ void sendDataToWebsite(String dataSent, String chamberStatus, String fault, Stri
 {
   if(doSendData) {
   String data = "id=" + valveID + "&v=" + dataSent + "&c=" + chamberStatus + "&f=" + fault + "&e=" + emer ;  
-  httppost (data,"mi-linux.wlv.ac.uk" , "/~1606512/NewWebUi/valve_con.php" ); 
+  httppost (data,F("mi-linux.wlv.ac.uk") , F("/~1606512/NewWebUi/valve_con.php") ); 
   }
 }
 
@@ -377,16 +360,18 @@ ESP8266.print("POST " + uri + " HTTP/1.0\r\n" +
 "Host: " + server + "\r\n" +
 "Connection: keep-alive" + "\r\n"); //+
 //"Accept: *" + "/" + "*\r\n");
-delay(1000);
+delay(200); //1000 // 100
 ESP8266.print("Content-Length: " + dataL + "\r\n");
-delay(1000);
+delay(200); //1000 // 100
 ESP8266.print("Content-Type: application/x-www-form-urlencoded\r\n\r\n" +  data);
-delay(1000);
+delay(200); //1000 // 100
 }
 
 // creates http request post.
 void httppost (String data, String server, String uri) { 
   Serial.println("HTTP_POST");  
+  
+  sendLCD(F("DATA SEND...."),"0");
   boolean sent = false; 
 
   if(!wiFiSetDone) {
@@ -398,9 +383,7 @@ void httppost (String data, String server, String uri) {
   delay(100);
   
   if(ESP8266.find("OK")) {
-  // Serial.println("TCP connection ready");
-   //ESP8266.println("AT+CIPSTO=7200");
-   receiveFromESP8266(1000);
+   receiveFromESP8266(100); // 1000 // 100
    sent = true;
 
 
@@ -410,12 +393,12 @@ void httppost (String data, String server, String uri) {
    ESP8266.print(sendCmd);
    ESP8266.println(len);
 
-   delay(1000);
+   delay(100); // 1000 //200
    createRequest(data,server,uri); // creates and sends the request string.
-   delay(5000);
+  // delay(5000); //5000
 
 
-   String responce = receiveFromESP8266(1000);
+   String responce = receiveFromESP8266(5000);
 
    
     // close the connection
@@ -437,9 +420,13 @@ void httppost (String data, String server, String uri) {
 
 if(sent==false) { // if not sent reset wifi and try again.
    // Serial.println("trying again");  
-    delay(1000);
-    //wiFiSetDone = false;
+    sendLCD(F("DATA SENT ERROR..."),"0");
+    delay(500); // 1000
     httppost(data,server,uri);
+  }
+  else
+  {
+     sendLCD(F("DATA SENT OK..."),"0");
   }
 }
 
@@ -512,7 +499,7 @@ boolean loopSteps(int numberOfSteps,boolean opening)
     // function to time openening and closing of valve if longer them 16 seconds there is an error
     if ((millis() - startMillis) > 16000) {
     valveError = true;    
-    sendDataToWebsite("ERROR","NA","YES","NO");
+    sendDataToWebsite(F("ERROR"),"NA","YES","NO");
     break;
     }
       if (opening) {
@@ -581,7 +568,7 @@ boolean loopSteps(int numberOfSteps,boolean opening)
 // Function to open the valve
 void openValve(){
 
- sendLCD("OPENING VALVE....","0");
+ sendLCD(F("OPENING VALVE...."),"0");
   // Serial.print("Error ");  
   // Serial.println(valveError);  
   if(!valveError)
@@ -594,8 +581,10 @@ void openValve(){
     if(!valveError) {
        setColor(0, 255, 0); // Turn the Led Green
        valveClosed = false;
-       sendLCD("VALVE OPEN....","0");
-       sendDataToWebsite("OPEN","NO","NO","NO");
+       sendLCD(F("VALVE OPEN...."),"0");
+        if(!testMode) {
+           sendDataToWebsite("OPEN","NO","NO","NO");
+        }
     }
   }
 }
@@ -603,7 +592,7 @@ void openValve(){
 // Function to close the valve
 void closeValve(){
   
-  sendLCD("CLOSING VALVE....","0");
+  sendLCD(F("CLOSING VALVE...."),"0");
   if(!valveError)
   {
   for (int i = 0; i<8; i++){
@@ -616,8 +605,10 @@ void closeValve(){
   valveClosed = true;
 
   if(wiFiSetDone) {// open send if wifi is setup
-      sendLCD("VALVE CLOSED....","0"); 
-      sendDataToWebsite("CLOSED","YES","NO","NO");
+      sendLCD(F("VALVE CLOSED...."),"0"); 
+       if(!testMode) {
+          sendDataToWebsite("CLOSED","YES","NO","NO");
+       }
    }
   }
  }
