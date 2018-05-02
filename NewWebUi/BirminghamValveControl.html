@@ -53,25 +53,25 @@ function loadupdate(){
                 
             $(document).ready(function(){
                 $("#valOn").click(function(){
-                    $.get("http://172.25.24.167", {pin:1}); // execute get request
+                    $.get("http://172.25.25.217", {pin:1}); // execute get request
                     alert("OPENING VALVE");
                 });
             });
             $(document).ready(function(){
                 $("#valOff").click(function(){
-                    $.get("http://172.25.24.167", {pin:2}); // execute get request
+                    $.get("http://172.25.25.217", {pin:2}); // execute get request
                     alert("CLOSING VALVE");
                 });
             });
             $(document).ready(function(){
                 $("#valTest").click(function(){
-                    $.get("http://172.25.24.167", {pin:4}); // execute get request
+                    $.get("http://172.25.25.217", {pin:4}); // execute get request
                     alert("TESTING VALVE");
                 });
             });
             $(document).ready(function(){
                 $("#valReset").click(function(){
-                    $.get("http://172.25.24.167", {pin:5}); // execute get request
+                    $.get("http://172.25.25.217", {pin:5}); // execute get request
                     alert("EMERGENCY RESET");
                 });
             });
