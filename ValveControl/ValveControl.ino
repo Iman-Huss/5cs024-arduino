@@ -5,25 +5,25 @@
 #include <LiquidCrystal.h>
 #include <avr/pgmspace.h> // import memory
 
-boolean inTestMode = false;
-boolean valveClosed = false;
-boolean valveError = false;
-boolean wiFiSetDone = false;
-boolean doSendData = true;
+boolean inTestMode = false;	// Check if test mode
+boolean valveClosed = false;  // Check valve closed or open
+boolean valveError = false;	// Verify a valve failure
+boolean wiFiSetDone = false;  // Is the wifi connected?
+boolean doSendData = true;  // Check if the arduino is currently sending data
 boolean liquidTrigger = false;
 boolean testMode = false;
 
 // const vars for valve states
 
-int const STATE_VALVE_OPEN = 1000;
-int const STATE_VALVE_CLOSED = 2000;
-int const STATE_VALVE_HALF = -1000;
+int const STATE_VALVE_OPEN = 1000;   // Stepper Motor to open the valve
+int const STATE_VALVE_CLOSED = 2000; // Stepper Motor to close the valve
+int const STATE_VALVE_HALF = -1000;  // Stepper Motor on half way only
 const String valveID = "1837"; // valve ID
 String ipNumber;
 
 
-int currentValveState = STATE_VALVE_HALF;
-int ledState = 0;
+int currentValveState = STATE_VALVE_HALF;  // set the valve at the half way
+int ledState = 0; // led off
 
 // motor defines
 //---( Number of steps per revolution of INTERNAL motor in 4-step mode )
@@ -36,14 +36,14 @@ SoftwareSerial ESP8266(11, 12); // RX, TX
 
 
 // RGB Pins
-const int redPin = 6;
-const int greenPin = 10; // pin 10 swapped with pin 13 ( SoftwareSerial ) becasuse pin 13 was not PWM 
-const int bluePin = 9;
+const int redPin = 6;  // Red color pin of the led
+const int greenPin = 10; // pin 10 swapped with pin 13 ( SoftwareSerial ) because pin 13 was not PWM 
+const int bluePin = 9;   // blue color pin of the led
 
 // sensor pins
-const int openSensorPin = 8;
-const int closeSensorPin = 7;
-const int liquidSesnorPin = 13;
+const int openSensorPin = 8;  // Sensor on the top of the valve to detect an opened valve
+const int closeSensorPin = 7;   // Sensor on the bottom of the valve to detect a closed valve
+const int liquidSesnorPin = 13;// Sensor for the liquid
 
 
 // Initialize Stepper Motor
@@ -71,10 +71,12 @@ void setup()
 //   set up the LCD's number of columns and rows:
    lcd.begin(16, 2);
 
+   //   set up the RGB pin
   pinMode(bluePin,OUTPUT);  
   pinMode(greenPin,OUTPUT);
   pinMode(redPin,OUTPUT);
   
+  //   set up the Sensors
   pinMode(openSensorPin,INPUT);
   pinMode(closeSensorPin,INPUT);
   pinMode(liquidSesnorPin,INPUT);
@@ -85,7 +87,7 @@ void setup()
 
   small_stepper.setSpeed(600); // sets speed of motor  
   
-  sendLCD(F("STARTING UP...."),"1");
+  sendLCD(F("STARTING UP...."),"1"); //   set up the LCD first message
   closeValve(); // closes valve
   setupWiFi(); // setup wifi
   currentValveState = STATE_VALVE_CLOSED; // set state to closed
@@ -101,11 +103,11 @@ void setupWiFi()
   setColor(0, 0, 255); // turns on blue LED to indicate initialisation of system. 
   
   if (!inTestMode) { // added so quick testing can take place......
-   ESP8266.begin(115200);
-   sendToESP8266("AT+CIOBAUD=9600");
-   receiveFromESP8266(1000);
+   ESP8266.begin(115200);  // ESP module start
+   sendToESP8266("AT+CIOBAUD=9600"); // Send command to esp serial bauds
+   receiveFromESP8266(1000); // Reading response of the ESP
    ESP8266.begin(9600);  
-   connectWifi();
+   connectWifi();  // Connect to WIFI
    wiFiSetDone = true;
   }
    // flashes RGB LED indicating system is ready for internet connection
@@ -140,8 +142,8 @@ if(digitalRead(liquidSesnorPin)==HIGH) { // checks to see if liquid in chamber
   }
   else {
       if(liquidTrigger) {
-          if(!testMode) {
-               if(!valveClosed) {  
+          if(!testMode) {  // checks to see if not in test mode
+               if(!valveClosed) {  // checks if the valve is not closed
                   sendDataToWebsite(F("CLOSED"),"NO","NO","NO");   // send message to website saying its closed no liquid
                } 
           }
@@ -156,9 +158,9 @@ if(inTestMode) {// open and close Test
   delay(500);
   setColor(0, 0, 255);  // blue
   delay(500); 
-  openValve();
+  openValve(); // open valve
   delay(2000);
-  closeValve();
+  closeValve(); // Then close the valve
   inTestMode = false;
 }
 
@@ -245,14 +247,9 @@ String testValve()
 void connectWifi() 
 {  
 
-  //String wifiNetwork = "MOHAESP"; // Garder les guillemets
-  //String Password = "password"; // Garder les guillemets
+  String wifiNetwork = "wolfradiolan"; // SSID of the network
+  String Password = "12345678"; // Password 
 
-  String wifiNetwork = "wolfradiolan"; // Garder les guillemets
-  String Password = "12345678"; // Garder les guillemets
-
-  //const String wifiNetwork = "lap_hotspot"; // Garder les guillemets
-  //const String Password = "12345678"; // Garder les guillemets
   
  
   sendToESP8266("AT");
@@ -280,7 +277,7 @@ void connectWifi()
 
 void software_Reset() // Restarts program via software can be used to reset from website
 {
-asm volatile ("  jmp 0");  
+	asm volatile ("  jmp 0");  
 }  
 
 
@@ -439,7 +436,7 @@ void sendToESP8266(String commande)
 
 String receiveFromESP8266(const int timeout) // standard method with different inputs
   {
-  return receiveFromESP8266(timeout, false);
+	return receiveFromESP8266(timeout, false);
   }
 
 
@@ -456,7 +453,7 @@ String receiveFromESP8266(const int timeout, boolean LCD)
     }
   }
 
-  if(!LCD) {
+  if(!LCD) { // if lcd not connected used the serial screen
      Serial.print(reponse);  
   } 
   else {
@@ -472,7 +469,7 @@ String receiveFromESP8266(const int timeout, boolean LCD)
 String extractIP(String reponse)
 {
   ipNumber = "";
-  int startIndex = reponse.indexOf("+CIFSR:STAIP,"); // getes the IP number string and splits the text to the correct string.
+  int startIndex = reponse.indexOf("+CIFSR:STAIP,"); // gets the IP number string and splits the text to the correct string.
   startIndex = startIndex + 14;
   ipNumber = reponse.substring(startIndex);
   int endIndex = reponse.indexOf("+CIFSR:STAMAC");
