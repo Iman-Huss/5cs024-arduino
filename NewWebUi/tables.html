@@ -28,20 +28,6 @@
     <![endif]-->
 	<script src="js/jquery.min.js"></script>
 
-    <!-- <script>
-		$(document).ready(function(){
-		   $.ajax({
-				url:'DatabaseTest.php',
-				type:'GET', 
-				data:"parameter=some_parameter",
-			   success:function(data)
-			   {
-					  $("#thisdiv").html(data);
-				   }
-			});
-		});
-	</script> -->
-
 </head>
 
 <body>
@@ -84,7 +70,7 @@
                     </ul>
                 </li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> WillyB <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Online <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
                             <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
@@ -94,7 +80,7 @@
                         </li>
                         <li class="divider"></li>
                         <li>
-                            <a href="index.html"><i class="fa fa-fw fa-power-off"></i> Clock Off</a>
+                            <a href="index.html"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
                         </li>
                     </ul>
                 </li>
@@ -129,6 +115,17 @@
                         <a href="tables.html"><i class="fa fa-fw fa-table"></i> Tables</a>
                     </li>
                     <li>
+                         _________________________________
+                    </li>
+					<div id="copyright">
+					
+					    <li>
+							<i class="fa fa-fw fa-copyright"></i> 
+					
+							<font color="LIGHTGRAY">V.A.L.V.E.S Created By Group08, All Rights Resevered</font> 					
+						</li>
+					</div>
+
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -163,94 +160,63 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Valve ID</th>
-                                        <th>Status</th>
-                                        <th>Time</th>
-										<th>Site</th>
-                                        <th>Zone</th>
-										<th>Fault?</th>
-										<th>Engineer</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>V1</td>
-                                        <td>Open</td>
-                                        <td>2018-04-20 04:13:56</td>
-                                        <td>Walsall</td>
-										<td>A1</td>
-										<td>None</td>
-										<td>E1</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V2</td>
-                                        <td>Closed</td>
-                                        <td>2018-04-20 04:13:56</td>
-                                        <td>Birmingham</td>
-										<td>B6</td>
-										<td>Leakage</td>
-										<td>E7</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V2</td>
-                                        <td>Open</td>
-                                        <td>2018-04-20 04:13:56</td>
-                                        <td>Birmingham</td>
-										<td>B6</td>
-										<td>Leakage Fixed</td>
-										<td>E7</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V8</td>
-                                        <td>Open</td>
-                                        <td>2018-04-20 04:13:56</td>
-                                        <td>Wolverhampton</td>
-										<td>K9</td>
-										<td>None</td>
-										<td>E2</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V3</td>
-                                        <td>Closed</td>
-                                        <td>2018-04-20 04:13:56</td>
-                                        <td>Walsall</td>
-										<td>D9</td>
-										<td>None</td>
-										<td>E7</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V4</td>
-                                        <td>Open</td>
-                                        <td>2018-04-20 04:13:56</td>
-                                        <td>Birmingham</td>
-										<td>H5</td>
-										<td>None</td>
-										<td>E5</td>
-                                    </tr>
-                                    <tr>
-                                        <td>V4</td>
-                                        <td>Closed</td>
-                                        <td>2018-04-20 04:14:06</td>
-                                        <td>Redditch</td>
-										<td>H5</td>
-										<td>None</td>
-										<td>E5</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            
                         </div>
-						
-						<h3>Valve Data</h3>
 
-						<form action="display.php" method="POST" target="_blank">
-						<p>Enter Valve ID:</p>
-						<input type="text" name="vid">
-						<input type="submit" name="submitvalve" value="Submit">
+						<h3>Enter Valve ID:</h3>
 						
+						<form action="display.php" method="POST" target="_blank">
+						<input type="text" name="vid">
+						<input type="submit" name="submitalldata" value="Show All Data">
+						</form>
+						
+						<br>
+						
+						<form action="displayfails.php" method="POST" target="_blank">
+						<input type="text" name="vid">
+						<input type="submit" name="submitfails" value="Show All Fails">
+						</form>
+		
+						<br>
+		
+						<form action="displayopens.php" method="POST" target="_blank">
+						<input type="text" name="vid">
+						<input type="submit" name="submitopenings" value="Show All Openings">
+						</form>
+						
+						<br>
+						
+						<form action="displaycloses.php" method="POST" target="_blank">
+						<input type="text" name="vid">
+						<input type="submit" name="submitclosings" value="Show All Closings">
+						</form>
+						
+						<br>
+						
+						<form action="displaytests.php" method="POST" target="_blank">
+						<input type="text" name="vid">
+						<input type="submit" name="submittests" value="Show All Tests">
+						</form>
+						
+						<br>
+						
+						<form action="displayerrors.php" method="POST" target="_blank">
+						<input type="text" name="vid">
+						<input type="submit" name="submiterrors" value="Show All Errors">
+						</form>
 						</div>
+						
+						<br>
+						
+						<h3>Find data based on a specific site</h3>
+						<h5>Enter Site:</h5>
+						
+						<form action="displaysites.php" method="POST" target="_blank">
+						<input type="text" name="site">
+						<input type="submit" name="submitsites" value="Show Data">
+						</form>
+						</div>
+						
                     </div>
 
                 </div>

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Valve Control</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/sb-admin.css" rel="stylesheet">
+
+    <!-- Morris Charts CSS -->
+    <link href="css/plugins/morris.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Gay Queers -->
+    <SCRIPT src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></SCRIPT>
+    <SCRIPT src="https://code.jquery.com/jquery-1.12.4.js"></SCRIPT>
+    <SCRIPT src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></SCRIPT>
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+   
+
+<script language="javascript" type="text/javascript">
+$(document).ready(function(){    
+    loadupdate();
+});
+
+function loadupdate(){
+    $("#valve_data").load("livefeed.php");
+    setTimeout(loadupdate, 1000);
+}
+</script>
+
+
+ <script>
+                
+            $(document).ready(function(){
+                $("#valOn").click(function(){
+                    $.get("http://172.25.25.217", {pin:1}); // execute get request
+                    alert("OPENING VALVE");
+                });
+            });
+            $(document).ready(function(){
+                $("#valOff").click(function(){
+                    $.get("http://172.25.25.217", {pin:2}); // execute get request
+                    alert("CLOSING VALVE");
+                });
+            });
+            $(document).ready(function(){
+                $("#valTest").click(function(){
+                    $.get("http://172.25.25.217", {pin:4}); // execute get request
+                    alert("TESTING VALVE");
+                });
+            });
+            $(document).ready(function(){
+                $("#valReset").click(function(){
+                    $.get("http://172.25.25.217", {pin:5}); // execute get request
+                    alert("EMERGENCY RESET");
+                });
+            });
+
+
+            var siteData = [];
+      var zoneData = [];
+      var valveData = [];  
+      var arrayLength = valveData.length;   
+
+	  //Javascript, AJAX. Allows for addition of new valves to the database
+	  function storeValve()
+	  {
+		$.ajax({
+			method: "POST",
+			url: "addvalve.php",
+			data: { 
+				vid: $('#addValveTB').val()
+			}
+		}).done(function(response) {
+			$("#output").html(response);
+		});
+	  }
+	  //
+	  
+      function removeValve() {
+          var x = document.getElementById("valveSelect");
+          x.remove(x.selectedIndex);
+          
+      }
+      
+      function loadZone() {
+          var x = document.getElementById("valveSelect");
+          x.remove(x.selectedIndex);
+      }
+         
+      function deleteAll() {
+          localStorage.removeItem("valves");
+          localStorage.removeItem("check")  ;
+      }
+      
+      
+      
+      function loadPage() {
+            document.getElementById("demo3").innerHTML = localStorage.getItem("check");
+            
+      
+           if (localStorage.getItem("check") === null) 
+           {
+              localStorage.setItem("check", "1");   
+           }
+          
+          else
+          {
+          
+          var retrievedData = localStorage.getItem("valves"); 
+          valveData = JSON.parse(retrievedData);
+          document.getElementById("demo").innerHTML = valveData;
+          
+          var x = document.getElementById("valveSelect");
+          var option = document.createElement("option");
+          option.text = localStorage.getItem("valves");
+          x.add(option);
+          
+          
+          x.add(option);
+          uname = localStorage.getItem("username") ;
+          document.getElementById("userinfo").innerHTML = uname;; 
+          
+            
+          var valveArrayLength = valveData.length;
+          
+             
+             
+          
+          
+        var valveSel = document.getElementById('valveSelect');
+        var zoneSel = document.getElementById('zoneSelect');
+        var siteSel = document.getElementById('siteSelect');
+        
+        
+        for(var i = 0; i < valveArrayLength; i++) 
+        {
+          
+          var opt = document.createElement('option');
+          opt.innerHTML = valveData[i];
+          opt.textContent = valveData[i];
+          valveSel.appendChild(opt);
+        }
+           
+      }    
+           
+          
+      function showLoginInfo()
+      {
+          localStorage.setItem("username", uname);  
+          
+          document.getElementById("userinfo").innerHTML = uname;
+      }
+          
+          
+      }
+      
+      function commit()
+      {    
+          
+          
+          document.getElementById("demo").innerHTML = valveData;
+          document.getElementById("demo2").innerHTML = valveData.length;
+          
+          localStorage.setItem("valves", JSON.stringify(valveData));
+      }   
+      
+
+      var modal = document.getElementById("id01");
+    
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+        </script>
+
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="dashboard.html">Valve Control</a>
+            </div>
+            <!-- Top Menu Items -->
+            <ul class="nav navbar-right top-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bell"></i> <b class="caret"></b></a>
+                    <ul class="dropdown-menu alert-dropdown">
+                        <li>
+                            <a href="#">Leaks detected in Birmingham area <span class="label label-default">PRIORITY</span></a>
+                        </li>
+                        <li>
+                            <a href="#">User registered [WillyB]<span class="label label-primary">SECURITY</span></a>
+                        </li>
+                        <li>
+                            <a href="#">Test ran 23:22<span class="label label-success">SUCCSESS</span></a>
+                        </li>
+                        <li>
+                            <a href="#">Database backup complete<span class="label label-info">Good Stuff</span></a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">View All</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Online <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="index.html"><i class="fa fa-fw fa-power-off"></i> Log Out </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav side-nav">
+                    <li>
+                        <a href="dashboard.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" data-toggle="collapse" data-target="#demo"><i class="fa fa-fw fa-tint"></i> Control Valves <i class="fa fa-fw fa-caret-down"></i></a>
+                        <ul id="demo" class="collapse">
+                            <li>
+                                <a href="BirminghamValveControl.html">Birmingham</a>
+                            </li>
+                            <li>
+                                <a href="RedditchValveControl.html">Redditch</a>
+                            </li>
+                            <li>
+                                <a href="WalsallValveControl.html">Walsall</a>
+                            </li>
+                            <li>
+                                <a href="WolverhamptonValveControl.html">Wolverhampton</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
+                    </li>
+                    <li>
+                        <a href="tables.html"><i class="fa fa-fw fa-table"></i> Tables</a>
+                    </li>
+                    <li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </nav>
+
+        <div id="page-wrapper">
+
+            <div class="container-fluid">
+
+                <!-- Page Heading -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">
+                            Valve Control<small>Redditch</small>
+                        </h1>
+                        <ol class="breadcrumb">
+                                <li>
+                                        <i class="fa fa-dashboard"></i>  <a href="index.html">Dashboard</a>
+                                    </li>
+                            <li class="active">
+                                <i class="fa fa-tint"></i> Valve Control
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- /.row -->
+                <div class="row">
+                        <div class="col-lg-4">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i>New Valve</h3>
+                                    </div>
+                                    <div class="panel-body">
+										<div style="vertical-align: middle;margin:auto; width:50%">
+											<div>
+												<LABEL for="addvalve"><B>Add Valve:</B></LABEL>
+											</div>
+											    <br>
+											<div>
+												<INPUT type="text" id="addValveTB" placeholder="Enter valve name." name="valvetextbox" required>
+											</div>
+												<br>
+											<div>
+												<BUTTON type="button" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="storeValve()">Add Valve</BUTTON>
+												<div id = output></div>
+											</div>
+												<br>
+											<div>
+												<BUTTON type="button" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="removeValve()">Remove Valve</BUTTON> 
+											</div>
+												<br>
+											<div>
+												<BUTTON type"button" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="commit()">Commit Valve</BUTTON>
+											</div>
+												<br>
+											<div>
+												<BUTTON type"button" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="deleteAll()">Delete All</BUTTON>
+											</div>	
+										</div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                    <div class="col-lg-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Valve Controller</h3>
+                            </div>
+                            <div class="panel-body">
+                                   <div style="vertical-align: middle;margin:auto; width:50%"> 
+                                <LABEL for="valveName" ><B>Select Valve:</B></LABEL>
+                                <br>
+                                    <SELECT id="valveSelect" name="valveName">
+                                          <OPTION value="a">V1</OPTION>
+                                          <OPTION value="b">V2</OPTION>
+                                          <OPTION value="c">V3</OPTION>
+                                          <OPTION value="d">V4</OPTION>
+										  <OPTION value="d">1837</OPTION>
+										  <OPTION value="d">420</OPTION>
+                                      
+                                    </SELECT>
+                                    </div>
+                                    <br>
+                                  
+
+											<div style="vertical-align: middle;margin:auto; width:50%">
+											
+                                            <BUTTON id="valOn" class="btn btn-primary btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnSearch_Click">OPEN VALVE</BUTTON>
+											
+                                    </div>
+                                            <br>
+                                    <div style="vertical-align: middle;margin:auto; width:50%">
+											
+                                            <BUTTON id="valOff" class="btn btn-danger btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">CLOSE VALVE</BUTTON>
+											
+                                    </div>
+                                    <br>
+                                    <div style="vertical-align: middle;margin:auto; width:50%">
+
+                                            <BUTTON id="valTest" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">TEST VALVE</BUTTON>
+
+                                    </div>
+                                    <br>
+                                    <div style="vertical-align: middle;margin:auto; width:50%">
+                                            <BUTTON id="valReset" class="btn btn-success btn-md right-block" Style="vertical-align: middle; width:100%;" onClick="btnClear_Click">RESET VALVE</BUTTON>
+                                    </div>
+    
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-tint fa-fw"></i> Live Valve Status</h3>
+                            </div>
+                           
+
+			 <div class="panel-body">
+                                   <div style="vertical-align: middle;margin:auto; width:50%"> 
+                               
+                                  <div id="valve_data"></div>
+  
+    
+     </div>
+                </div>
+                <!-- /.row -->
+
+
+
+                            </div>
+                        </div>
+                </div>
+
+
+
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Morris Charts JavaScript -->
+    <script src="js/plugins/morris/raphael.min.js"></script>
+    <script src="js/plugins/morris/morris.min.js"></script>
+    <script src="js/plugins/morris/morris-data.js"></script>
+
+</body>
+
+</html>
