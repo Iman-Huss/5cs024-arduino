@@ -33,7 +33,7 @@ CREATE TABLE Valve (
 
 CREATE TABLE Chamber (
 	cstatus INT NOT NULL,
-	ctime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	contaminant VARCHAR(100),
 	PRIMARY KEY (cstatus)
 );
 
