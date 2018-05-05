@@ -1,20 +1,14 @@
-       __   __        _______        ___            __   __        _______        _______ 
-      |  | |  |      |   _   |      |   |          |  | |  |      |       |      |       |
-      |  |_|  |      |  |_|  |      |   |          |  |_|  |      |    ___|      |  _____|
-      |       |      |       |      |   |          |       |      |   |___       | |_____ 
- ___  |       | ___  |       | ___  |   |___  ___  |       | ___  |    ___| ___  |_____  |
-|   |  |     | |   | |   _   ||   | |       ||   |  |     | |   | |   |___ |   |  _____| |
-|___|   |___|  |___| |__| |__||___| |_______||___|   |___|  |___| |_______||___| |_______|
+#• V • A • L • V • E • S •
 
-Valve Application For Liquids In Virtual Enviroments System
+##Valve Application For Liquids In Virtual Enviroments System
 
-About:
+###About:
 
 During our second year of studies at the University Of Wolverhampton we chose a remotely controlled valve system as our development project. This repository contains the fruits of our labour.
 
 The system is designed to control an arduino based stepper motor system to open and close valves remotely from a web interface. The hardware automatically stores all open/close, test cases and errors to an SQL log which it then displays over on the tables page. We've also made use of charts to help visualise the data.
 
-The group includes;
+###The group includes;
 
 Iman Hussain - Team Leader
 Muhammed Sidique - Business Analayst & Chief Researcher
@@ -24,7 +18,7 @@ Adam Peason - Hardware Engineer
 Mohammed Marouffi - Embedded Systems Developer
 Abdu Dafiri - Database Archiectet, Administrator & Curator
 
-License Information:
+###License Information:
 
 This software/hardware is our own product and is the sum total of 13 weeks of rigorous testing, developing and debugging.
 
