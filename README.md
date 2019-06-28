@@ -28,7 +28,7 @@ As such any implimentation of our code without our permission is intellectual th
 
 As students we're more than happy to teach you about our code, how it works and what each part does. To do so, feel free to contact us. You can email Iman on: i.hussain7@wlv.ac.uk - He will then be able to assist you.
 
-Feel free to observe the code and if any future employer's are reading this, hello, you made the correct decision in shortlisting me/us (delete necassary).
+Feel free to observe the code and if any future employer's are reading this, hello, you made the correct decision in shortlisting me/us (delete necessary).
 
 With that out of the way, thank you for taking your time to read this document. We appreciate your time greatly. If you have any feedback feel free to get in touch :)
 
