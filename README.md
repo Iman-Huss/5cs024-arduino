@@ -17,7 +17,7 @@ Will Barker - Principle Web Devloper
 Ryan Singh - Web Security Assistant
 Adam Peason - Hardware Engineer
 Mohammed Marouffi - Embedded Systems Developer
-Abdu Dafiri - Database Archiectet, Administrator & Curator
+Abdu Dafiri - Database Architect, Administrator & Curator
 
 
 ### License Information:
